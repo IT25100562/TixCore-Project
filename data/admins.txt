@@ -1,0 +1,3 @@
+a1|admin|admin@tixcore.com|System Admin|superadmin|2026-04-01T09:00:00Z|admin123
+a2|sarah|sarah@tixcore.com|Sarah Wijesinghe|manager|2026-04-01T09:00:00Z|sarah123
+a3|david|david@tixcore.com|David Bandara|support|2026-04-01T09:00:00Z|david123

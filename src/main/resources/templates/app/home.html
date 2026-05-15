@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head><meta charset="UTF-8"/><title>Browse Events | TixCore</title><link rel="stylesheet" th:href="@{/css/style.css}"/></head>
+<body class="app-body">
+<div th:replace="~{fragments/layout :: usernav('home')}"></div>
+<section class="hero">
+    <div class="hero-inner">
+        <h1>Discover unforgettable events</h1>
+        <p>Concerts, conferences, festivals and more — book your seat in seconds.</p>
+        <form class="hero-search" method="get" th:action="@{/app/home}">
+            <input type="text" name="q" th:value="${q}" placeholder="Search events..."/>
+            <select name="category">
+                <option value="">All categories</option>
+                <option th:each="c : ${categories}" th:value="${c}" th:text="${c}" th:selected="${c == category}"></option>
+            </select>
+            <button class="btn" type="submit">Search</button>
+        </form>
+    </div>
+</section>
+<main class="app-main">
+    <div class="event-grid" th:if="${!events.isEmpty()}">
+        <a class="event-card" th:each="e : ${events}" th:href="@{'/app/event/' + ${e.id}}">
+            <div class="event-card-banner" th:attr="data-cat=${e.category}">
+                <span th:text="${e.category}"></span>
+            </div>
+            <div class="event-card-body">
+                <h3 th:text="${e.title}"></h3>
+                <p class="event-meta"><span th:text="${e.date}"></span> &middot; <span th:text="${e.time}"></span></p>
+                <p class="event-venue" th:text="${venueNames[e.venueId]}"></p>
+                <p class="event-desc" th:text="${e.description}"></p>
+                <div class="event-card-foot">
+                    <span class="event-price" th:text="'From $' + ${e.basePrice}"></span>
+                    <span class="event-cta">View &rarr;</span>
+                </div>
+            </div>
+        </a>
+    </div>
+    <div th:if="${events.isEmpty()}" class="empty card">No events match your search.</div>
+</main>
+</body>
+</html>

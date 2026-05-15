@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head><meta charset="UTF-8"/><title th:text="${event.title} + ' | TixCore'">Event</title><link rel="stylesheet" th:href="@{/css/style.css}"/></head>
+<body class="app-body">
+<div th:replace="~{fragments/layout :: usernav('home')}"></div>
+<main class="app-main">
+    <a th:href="@{/app/home}" class="back-link">&larr; Back to events</a>
+    <div class="event-detail">
+        <div class="event-detail-banner" th:attr="data-cat=${event.category}">
+            <span th:text="${event.category}"></span>
+        </div>
+        <div class="event-detail-body">
+            <h1 th:text="${event.title}"></h1>
+            <div class="event-meta-row">
+                <span><strong>Date:</strong> <span th:text="${event.date}"></span></span>
+                <span><strong>Time:</strong> <span th:text="${event.time}"></span></span>
+                <span><strong>Venue:</strong> <span th:text="${venue != null ? venue.name : 'TBA'}"></span></span>
+                <span class="event-price-big" th:text="'$' + ${event.basePrice} + ' / seat'"></span>
+            </div>
+            <p class="event-description" th:text="${event.description}"></p>
+
+            <div class="card book-card">
+                <h3>Book your seats</h3>
+                <form method="post" th:action="@{'/app/event/' + ${event.id} + '/book'}">
+                    <div class="field">
+                        <label>Seats (comma separated, e.g. A1, A2, A3)</label>
+                        <input type="text" name="seats" placeholder="A1, A2" required/>
+                    </div>
+                    <button class="btn" type="submit">Confirm Booking</button>
+                </form>
+            </div>
+
+            <div class="card">
+                <h3>Reviews (<span th:text="${reviews.size()}">0</span>)</h3>
+                <div th:if="${reviews.isEmpty()}" class="empty" style="padding:20px;">Be the first to review.</div>
+                <div class="review-list">
+                    <div class="review-item" th:each="r : ${reviews}">
+                        <div class="review-head">
+                            <strong th:text="${userNames[r.userId]}">User</strong>
+                            <span class="stars" th:text="${'★'.repeat(r.rating) + '☆'.repeat(5 - r.rating)}">★★★★★</span>
+                        </div>
+                        <p th:text="${r.comment}"></p>
+                    </div>
+                </div>
+                <h4 style="margin-top:16px;">Leave a review</h4>
+                <form method="post" th:action="@{'/app/event/' + ${event.id} + '/review'}">
+                    <div class="field">
+                        <label>Rating</label>
+                        <select name="rating">
+                            <option value="5">5 - Excellent</option>
+                            <option value="4">4 - Great</option>
+                            <option value="3">3 - Okay</option>
+                            <option value="2">2 - Poor</option>
+                            <option value="1">1 - Bad</option>
+                        </select>
+                    </div>
+                    <div class="field">
+                        <label>Comment</label>
+                        <textarea name="comment" required></textarea>
+                    </div>
+                    <button class="btn" type="submit">Submit Review</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</main>
+</body>
+</html>

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head><meta charset="UTF-8"/><title>Booking Form | TixCore</title><link rel="stylesheet" th:href="@{/css/style.css}"/></head>
+<body>
+<div class="layout">
+    <div th:replace="~{fragments/layout :: sidebar('bookings')}"></div>
+    <main class="main">
+        <div class="page-header"><h2 th:text="${booking.id != null} ? 'Edit Booking' : 'New Booking'">Booking</h2></div>
+        <div class="card">
+            <form th:action="@{/bookings}" method="post" th:object="${booking}">
+                <input type="hidden" th:field="*{id}"/>
+                <input type="hidden" th:field="*{createdAt}"/>
+                <div class="field"><label>User</label>
+                    <select th:field="*{userId}" required>
+                        <option value="">-- select user --</option>
+                        <option th:each="u : ${users}" th:value="${u.id}" th:text="${u.username + ' (' + u.fullName + ')'}"></option>
+                    </select>
+                </div>
+                <div class="field"><label>Event</label>
+                    <select th:field="*{eventId}" required>
+                        <option value="">-- select event --</option>
+                        <option th:each="e : ${events}" th:value="${e.id}" th:text="${e.title}"></option>
+                    </select>
+                </div>
+                <div class="field"><label>Seats (comma separated, e.g. A1,A2,A3)</label><input type="text" th:field="*{seats}"/></div>
+                <div class="field"><label>Total Price</label><input type="number" step="0.01" th:field="*{totalPrice}"/></div>
+                <div class="field"><label>Status</label>
+                    <select th:field="*{status}">
+                        <option value="confirmed">Confirmed</option>
+                        <option value="pending">Pending</option>
+                        <option value="cancelled">Cancelled</option>
+                    </select>
+                </div>
+                <div class="actions">
+                    <button class="btn" type="submit">Save</button>
+                    <a class="btn btn-secondary" th:href="@{/bookings}">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </main>
+</div>
+</body>
+</html>

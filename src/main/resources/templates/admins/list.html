@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head><meta charset="UTF-8"/><title>Admins | TixCore</title><link rel="stylesheet" th:href="@{/css/style.css}"/></head>
+<body>
+<div class="layout">
+    <div th:replace="~{fragments/layout :: sidebar('admins')}"></div>
+    <main class="main">
+        <div class="page-header">
+            <h2>Admins</h2>
+            <a class="btn" th:href="@{/admins/new}">+ New Admin</a>
+        </div>
+        <table th:if="${!admins.isEmpty()}">
+            <thead><tr><th>Username</th><th>Full Name</th><th>Email</th><th>Role</th><th>Actions</th></tr></thead>
+            <tbody>
+                <tr th:each="a : ${admins}">
+                    <td th:text="${a.username}"></td>
+                    <td th:text="${a.fullName}"></td>
+                    <td th:text="${a.email}"></td>
+                    <td th:text="${a.role}"></td>
+                    <td class="actions">
+                        <a class="btn btn-sm btn-secondary" th:href="@{'/admins/' + ${a.id} + '/edit'}">Edit</a>
+                        <form th:action="@{'/admins/' + ${a.id} + '/delete'}" method="post" style="display:inline;">
+                            <button class="btn btn-sm btn-danger" onclick="return confirm('Delete this admin?')">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <div th:if="${admins.isEmpty()}" class="card empty">No admins yet.</div>
+    </main>
+</div>
+</body>
+</html>

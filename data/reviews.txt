@@ -1,0 +1,4 @@
+r1|u1|e1|5|Amazing concert, the band was incredible!|2026-04-15T12:00:00Z
+r2|u2|e1|4|Great vibes but the venue was crowded.|2026-04-15T12:00:00Z
+r3|u3|e4|5|Best festival of the year!|2026-04-16T12:00:00Z
+r4|u4|e3|4|Hilarious comedians, highly recommend.|2026-04-16T12:00:00Z

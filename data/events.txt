@@ -1,0 +1,7 @@
+e1|Indigo Skies Live in Concert|An unforgettable night of indie music.|Concert|2026-06-15|19:30|v1|2500.0|scheduled|2026-04-05T10:00:00Z
+e2|Tech Summit 2026|Annual technology conference.|Conference|2026-07-10|09:00|v2|5000.0|scheduled|2026-04-05T10:00:00Z
+e3|Comedy Underground|Late-night stand-up showcase.|Comedy|2026-05-04|21:00|v1|1500.0|scheduled|2026-04-05T10:00:00Z
+e4|Coastal Jazz Festival|Two-day jazz festival by the sea.|Festival|2026-08-20|17:00|v3|3500.0|scheduled|2026-04-05T10:00:00Z
+e5|Startup Networking Night|Connect with founders and investors.|Networking|2026-05-25|18:00|v2|1000.0|scheduled|2026-04-05T10:00:00Z
+e6|Symphony Under the Stars|Classical orchestra outdoor performance.|Concert|2026-09-12|20:00|v3|3000.0|scheduled|2026-04-05T10:00:00Z
+4e1c2e00-3aae-4ea6-9739-327107179bd5|suhada koka|,jysdfgkj|Concert|2026-04-24|06:57|v2|1000.0|scheduled|2026-04-24T08:55:53.744426014Z

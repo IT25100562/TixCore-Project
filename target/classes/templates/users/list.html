@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head><meta charset="UTF-8"/><title>Users | TixCore</title><link rel="stylesheet" th:href="@{/css/style.css}"/></head>
+<body>
+<div class="layout">
+    <div th:replace="~{fragments/layout :: sidebar('users')}"></div>
+    <main class="main">
+        <div class="page-header">
+            <h2>Users</h2>
+            <a class="btn" th:href="@{/users/new}">+ New User</a>
+        </div>
+        <table th:if="${!users.isEmpty()}">
+            <thead><tr><th>Username</th><th>Full Name</th><th>Email</th><th>Phone</th><th>Actions</th></tr></thead>
+            <tbody>
+                <tr th:each="u : ${users}">
+                    <td th:text="${u.username}"></td>
+                    <td th:text="${u.fullName}"></td>
+                    <td th:text="${u.email}"></td>
+                    <td th:text="${u.phone}"></td>
+                    <td class="actions">
+                        <a class="btn btn-sm btn-secondary" th:href="@{'/users/' + ${u.id} + '/edit'}">Edit</a>
+                        <form th:action="@{'/users/' + ${u.id} + '/delete'}" method="post" style="display:inline;">
+                            <button class="btn btn-sm btn-danger" onclick="return confirm('Delete this user?')">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <div th:if="${users.isEmpty()}" class="card empty">No users yet.</div>
+    </main>
+</div>
+</body>
+</html>

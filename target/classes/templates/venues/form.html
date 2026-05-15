@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head><meta charset="UTF-8"/><title>Venue Form | TixCore</title><link rel="stylesheet" th:href="@{/css/style.css}"/></head>
+<body>
+<div class="layout">
+    <div th:replace="~{fragments/layout :: sidebar('venues')}"></div>
+    <main class="main">
+        <div class="page-header"><h2 th:text="${venue.id != null} ? 'Edit Venue' : 'New Venue'">Venue</h2></div>
+        <div class="card">
+            <form th:action="@{/venues}" method="post" th:object="${venue}">
+                <input type="hidden" th:field="*{id}"/>
+                <input type="hidden" th:field="*{createdAt}"/>
+                <div class="field"><label>Name</label><input type="text" th:field="*{name}" required/></div>
+                <div class="field"><label>Address</label><input type="text" th:field="*{address}"/></div>
+                <div class="field"><label>City</label><input type="text" th:field="*{city}"/></div>
+                <div class="field"><label>Capacity</label><input type="number" th:field="*{capacity}" min="0"/></div>
+                <div class="actions">
+                    <button class="btn" type="submit">Save</button>
+                    <a class="btn btn-secondary" th:href="@{/venues}">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </main>
+</div>
+</body>
+</html>

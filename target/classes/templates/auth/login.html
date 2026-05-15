@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Sign In | TixCore</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}"/>
+</head>
+<body class="auth-body">
+<div class="auth-shell">
+    <div class="auth-card">
+        <div class="auth-brand">
+            <div class="auth-logo">TC</div>
+            <h1>TixCore</h1>
+            <p>Welcome back. Sign in to continue.</p>
+        </div>
+        <form th:action="@{/login}" method="post" class="auth-form">
+            <div th:if="${error}" class="auth-error" th:text="${error}"></div>
+            <div class="field">
+                <label>Username</label>
+                <input type="text" name="username" th:value="${username}" required autofocus/>
+            </div>
+            <div class="field">
+                <label>Password</label>
+                <input type="password" name="password" required/>
+            </div>
+            <button type="submit" class="btn btn-block">Sign In</button>
+            <div class="auth-foot">
+                Don't have an account? <a th:href="@{/register}">Create one</a>
+            </div>
+        </form>
+        <div class="auth-hint">
+            <strong>Demo credentials</strong>
+            <div><span class="hint-tag admin">admin</span> admin / admin123</div>
+            <div><span class="hint-tag user">user</span> ramini / user123</div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

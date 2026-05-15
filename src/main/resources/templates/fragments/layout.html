@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<aside class="sidebar" th:fragment="sidebar(active)">
+    <h1>TixCore</h1>
+    <div class="sidebar-user">
+        <div class="avatar" th:text="${session.fullName != null ? #strings.substring(session.fullName,0,1) : 'A'}">A</div>
+        <div>
+            <div class="su-name" th:text="${session.fullName}">Admin</div>
+            <div class="su-role">Administrator</div>
+        </div>
+    </div>
+    <nav>
+        <a th:href="@{/}" th:classappend="${active=='dashboard'} ? 'active'">Dashboard</a>
+        <a th:href="@{/events}" th:classappend="${active=='events'} ? 'active'">Events</a>
+        <a th:href="@{/venues}" th:classappend="${active=='venues'} ? 'active'">Venues</a>
+        <a th:href="@{/bookings}" th:classappend="${active=='bookings'} ? 'active'">Bookings</a>
+        <a th:href="@{/users}" th:classappend="${active=='users'} ? 'active'">Users</a>
+        <a th:href="@{/admins}" th:classappend="${active=='admins'} ? 'active'">Admins</a>
+        <a th:href="@{/reviews}" th:classappend="${active=='reviews'} ? 'active'">Reviews</a>
+    </nav>
+    <a th:href="@{/logout}" class="logout-link">Sign out</a>
+</aside>
+
+<header class="user-nav" th:fragment="usernav(active)">
+    <div class="user-nav-inner">
+        <a th:href="@{/app/home}" class="brand">TixCore</a>
+        <nav class="user-nav-links">
+            <a th:href="@{/app/home}" th:classappend="${active=='home'} ? 'active'">Browse Events</a>
+            <a th:href="@{/app/my-bookings}" th:classappend="${active=='bookings'} ? 'active'">My Bookings</a>
+        </nav>
+        <div class="user-nav-right">
+            <span class="hello">Hi, <strong th:text="${session.fullName}">User</strong></span>
+            <a th:href="@{/logout}" class="btn btn-secondary btn-sm">Sign out</a>
+        </div>
+    </div>
+</header>
+</body>
+</html>

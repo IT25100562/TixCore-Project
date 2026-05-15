@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head><meta charset="UTF-8"/><title>Bookings | TixCore</title><link rel="stylesheet" th:href="@{/css/style.css}"/></head>
+<body>
+<div class="layout">
+    <div th:replace="~{fragments/layout :: sidebar('bookings')}"></div>
+    <main class="main">
+        <div class="page-header">
+            <h2>Bookings</h2>
+            <a class="btn" th:href="@{/bookings/new}">+ New Booking</a>
+        </div>
+        <table th:if="${!bookings.isEmpty()}">
+            <thead><tr><th>User</th><th>Event</th><th>Seats</th><th>Total</th><th>Status</th><th>Actions</th></tr></thead>
+            <tbody>
+                <tr th:each="b : ${bookings}">
+                    <td><span th:each="u : ${users}" th:if="${u.id == b.userId}" th:text="${u.username}"></span></td>
+                    <td><span th:each="e : ${events}" th:if="${e.id == b.eventId}" th:text="${e.title}"></span></td>
+                    <td th:text="${b.seats}"></td>
+                    <td th:text="'$' + ${b.totalPrice}"></td>
+                    <td><span class="badge" th:classappend="'badge-' + ${b.status}" th:text="${b.status}"></span></td>
+                    <td class="actions">
+                        <a class="btn btn-sm btn-secondary" th:href="@{'/bookings/' + ${b.id} + '/edit'}">Edit</a>
+                        <form th:action="@{'/bookings/' + ${b.id} + '/delete'}" method="post" style="display:inline;">
+                            <button class="btn btn-sm btn-danger" onclick="return confirm('Delete this booking?')">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <div th:if="${bookings.isEmpty()}" class="card empty">No bookings yet.</div>
+    </main>
+</div>
+</body>
+</html>

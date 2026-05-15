@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head><meta charset="UTF-8"/><title>My Bookings | TixCore</title><link rel="stylesheet" th:href="@{/css/style.css}"/></head>
+<body class="app-body">
+<div th:replace="~{fragments/layout :: usernav('bookings')}"></div>
+<main class="app-main">
+    <div class="page-header"><h2>My Bookings</h2></div>
+    <table th:if="${!bookings.isEmpty()}">
+        <thead><tr><th>Event</th><th>Seats</th><th>Total</th><th>Status</th><th>Booked On</th><th>Actions</th></tr></thead>
+        <tbody>
+            <tr th:each="b : ${bookings}">
+                <td th:text="${eventTitles[b.eventId]}"></td>
+                <td th:text="${b.seats}"></td>
+                <td th:text="'$' + ${b.totalPrice}"></td>
+                <td><span class="badge" th:classappend="'badge-' + ${b.status}" th:text="${b.status}"></span></td>
+                <td th:text="${#strings.substring(b.createdAt,0,10)}"></td>
+                <td>
+                    <form th:if="${b.status != 'cancelled'}" method="post" th:action="@{'/app/booking/' + ${b.id} + '/cancel'}" style="display:inline;">
+                        <button class="btn btn-sm btn-danger" onclick="return confirm('Cancel this booking?')">Cancel</button>
+                    </form>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <div th:if="${bookings.isEmpty()}" class="card empty">You have no bookings yet. <a th:href="@{/app/home}" style="color:#7c3aed;">Browse events</a>.</div>
+</main>
+</body>
+</html>

@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head><meta charset="UTF-8"/><title>Venues | TixCore</title><link rel="stylesheet" th:href="@{/css/style.css}"/></head>
+<body>
+<div class="layout">
+    <div th:replace="~{fragments/layout :: sidebar('venues')}"></div>
+    <main class="main">
+        <div class="page-header">
+            <h2>Venues</h2>
+            <a class="btn" th:href="@{/venues/new}">+ New Venue</a>
+        </div>
+        <table th:if="${!venues.isEmpty()}">
+            <thead><tr><th>Name</th><th>City</th><th>Address</th><th>Capacity</th><th>Actions</th></tr></thead>
+            <tbody>
+                <tr th:each="v : ${venues}">
+                    <td th:text="${v.name}"></td>
+                    <td th:text="${v.city}"></td>
+                    <td th:text="${v.address}"></td>
+                    <td th:text="${v.capacity}"></td>
+                    <td class="actions">
+                        <a class="btn btn-sm btn-secondary" th:href="@{'/venues/' + ${v.id} + '/edit'}">Edit</a>
+                        <form th:action="@{'/venues/' + ${v.id} + '/delete'}" method="post" style="display:inline;">
+                            <button class="btn btn-sm btn-danger" onclick="return confirm('Delete this venue?')">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <div th:if="${venues.isEmpty()}" class="card empty">No venues yet.</div>
+    </main>
+</div>
+</body>
+</html>

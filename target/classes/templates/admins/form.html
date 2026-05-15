@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head><meta charset="UTF-8"/><title>Admin Form | TixCore</title><link rel="stylesheet" th:href="@{/css/style.css}"/></head>
+<body>
+<div class="layout">
+    <div th:replace="~{fragments/layout :: sidebar('admins')}"></div>
+    <main class="main">
+        <div class="page-header"><h2 th:text="${admin.id != null} ? 'Edit Admin' : 'New Admin'">Admin</h2></div>
+        <div class="card">
+            <form th:action="@{/admins}" method="post" th:object="${admin}">
+                <input type="hidden" th:field="*{id}"/>
+                <input type="hidden" th:field="*{createdAt}"/>
+                <div class="field"><label>Username</label><input type="text" th:field="*{username}" required/></div>
+                <div class="field"><label>Full Name</label><input type="text" th:field="*{fullName}" required/></div>
+                <div class="field"><label>Email</label><input type="email" th:field="*{email}" required/></div>
+                <div class="field"><label>Role</label>
+                    <select th:field="*{role}">
+                        <option value="superadmin">Super Admin</option>
+                        <option value="manager">Manager</option>
+                        <option value="support">Support</option>
+                    </select>
+                </div>
+                <div class="actions">
+                    <button class="btn" type="submit">Save</button>
+                    <a class="btn btn-secondary" th:href="@{/admins}">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </main>
+</div>
+</body>
+</html>

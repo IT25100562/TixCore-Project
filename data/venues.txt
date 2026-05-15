@@ -1,0 +1,3 @@
+v1|Aurora Hall|123 Galle Road|Colombo|2500|2026-04-01T08:00:00Z
+v2|BMICH|Bauddhaloka Mawatha|Colombo|5000|2026-04-01T08:00:00Z
+v3|Coastal Pavilion|Beach Road|Galle|1500|2026-04-01T08:00:00Z

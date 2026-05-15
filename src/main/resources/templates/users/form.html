@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head><meta charset="UTF-8"/><title>User Form | TixCore</title><link rel="stylesheet" th:href="@{/css/style.css}"/></head>
+<body>
+<div class="layout">
+    <div th:replace="~{fragments/layout :: sidebar('users')}"></div>
+    <main class="main">
+        <div class="page-header"><h2 th:text="${user.id != null} ? 'Edit User' : 'New User'">User</h2></div>
+        <div class="card">
+            <form th:action="@{/users}" method="post" th:object="${user}">
+                <input type="hidden" th:field="*{id}"/>
+                <input type="hidden" th:field="*{createdAt}"/>
+                <div class="field"><label>Username</label><input type="text" th:field="*{username}" required/></div>
+                <div class="field"><label>Full Name</label><input type="text" th:field="*{fullName}" required/></div>
+                <div class="field"><label>Email</label><input type="email" th:field="*{email}" required/></div>
+                <div class="field"><label>Phone</label><input type="text" th:field="*{phone}"/></div>
+                <div class="actions">
+                    <button class="btn" type="submit">Save</button>
+                    <a class="btn btn-secondary" th:href="@{/users}">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </main>
+</div>
+</body>
+</html>

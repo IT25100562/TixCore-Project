@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head><meta charset="UTF-8"/><title>Review Form | TixCore</title><link rel="stylesheet" th:href="@{/css/style.css}"/></head>
+<body>
+<div class="layout">
+    <div th:replace="~{fragments/layout :: sidebar('reviews')}"></div>
+    <main class="main">
+        <div class="page-header"><h2 th:text="${review.id != null} ? 'Edit Review' : 'New Review'">Review</h2></div>
+        <div class="card">
+            <form th:action="@{/reviews}" method="post" th:object="${review}">
+                <input type="hidden" th:field="*{id}"/>
+                <input type="hidden" th:field="*{createdAt}"/>
+                <div class="field"><label>User</label>
+                    <select th:field="*{userId}" required>
+                        <option value="">-- select user --</option>
+                        <option th:each="u : ${users}" th:value="${u.id}" th:text="${u.username}"></option>
+                    </select>
+                </div>
+                <div class="field"><label>Event</label>
+                    <select th:field="*{eventId}" required>
+                        <option value="">-- select event --</option>
+                        <option th:each="e : ${events}" th:value="${e.id}" th:text="${e.title}"></option>
+                    </select>
+                </div>
+                <div class="field"><label>Rating (1-5)</label><input type="number" th:field="*{rating}" min="1" max="5" required/></div>
+                <div class="field"><label>Comment</label><textarea th:field="*{comment}"></textarea></div>
+                <div class="actions">
+                    <button class="btn" type="submit">Save</button>
+                    <a class="btn btn-secondary" th:href="@{/reviews}">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </main>
+</div>
+</body>
+</html>

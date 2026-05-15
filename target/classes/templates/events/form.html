@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head><meta charset="UTF-8"/><title>Event Form | TixCore</title><link rel="stylesheet" th:href="@{/css/style.css}"/></head>
+<body>
+<div class="layout">
+    <div th:replace="~{fragments/layout :: sidebar('events')}"></div>
+    <main class="main">
+        <div class="page-header"><h2 th:text="${event.id != null} ? 'Edit Event' : 'New Event'">Event</h2></div>
+        <div class="card">
+            <form th:action="@{/events}" method="post" th:object="${event}">
+                <input type="hidden" th:field="*{id}"/>
+                <input type="hidden" th:field="*{createdAt}"/>
+                <div class="field"><label>Title</label><input type="text" th:field="*{title}" required/></div>
+                <div class="field"><label>Description</label><textarea th:field="*{description}"></textarea></div>
+                <div class="field"><label>Category</label>
+                    <select th:field="*{category}">
+                        <option value="Concert">Concert</option>
+                        <option value="Conference">Conference</option>
+                        <option value="Comedy">Comedy</option>
+                        <option value="Festival">Festival</option>
+                        <option value="Networking">Networking</option>
+                        <option value="Sports">Sports</option>
+                        <option value="Theatre">Theatre</option>
+                    </select>
+                </div>
+                <div class="field"><label>Date</label><input type="date" th:field="*{date}" required/></div>
+                <div class="field"><label>Time</label><input type="time" th:field="*{time}"/></div>
+                <div class="field"><label>Venue</label>
+                    <select th:field="*{venueId}" required>
+                        <option value="">-- select venue --</option>
+                        <option th:each="v : ${venues}" th:value="${v.id}" th:text="${v.name}"></option>
+                    </select>
+                </div>
+                <div class="field"><label>Base Price</label><input type="number" step="0.01" th:field="*{basePrice}"/></div>
+                <div class="field"><label>Status</label>
+                    <select th:field="*{status}">
+                        <option value="scheduled">Scheduled</option>
+                        <option value="cancelled">Cancelled</option>
+                        <option value="completed">Completed</option>
+                    </select>
+                </div>
+                <div class="actions">
+                    <button class="btn" type="submit">Save</button>
+                    <a class="btn btn-secondary" th:href="@{/events}">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </main>
+</div>
+</body>
+</html>

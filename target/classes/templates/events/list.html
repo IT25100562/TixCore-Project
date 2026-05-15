@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head><meta charset="UTF-8"/><title>Events | TixCore</title><link rel="stylesheet" th:href="@{/css/style.css}"/></head>
+<body>
+<div class="layout">
+    <div th:replace="~{fragments/layout :: sidebar('events')}"></div>
+    <main class="main">
+        <div class="page-header">
+            <h2>Events</h2>
+            <a class="btn" th:href="@{/events/new}">+ New Event</a>
+        </div>
+        <table th:if="${!events.isEmpty()}">
+            <thead><tr><th>Title</th><th>Category</th><th>Date</th><th>Time</th><th>Venue</th><th>Price</th><th>Status</th><th>Actions</th></tr></thead>
+            <tbody>
+                <tr th:each="e : ${events}">
+                    <td th:text="${e.title}"></td>
+                    <td th:text="${e.category}"></td>
+                    <td th:text="${e.date}"></td>
+                    <td th:text="${e.time}"></td>
+                    <td>
+                        <span th:each="v : ${venues}" th:if="${v.id == e.venueId}" th:text="${v.name}"></span>
+                    </td>
+                    <td th:text="'$' + ${e.basePrice}"></td>
+                    <td th:text="${e.status}"></td>
+                    <td class="actions">
+                        <a class="btn btn-sm btn-secondary" th:href="@{'/events/' + ${e.id} + '/edit'}">Edit</a>
+                        <form th:action="@{'/events/' + ${e.id} + '/delete'}" method="post" style="display:inline;">
+                            <button class="btn btn-sm btn-danger" onclick="return confirm('Delete this event?')">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <div th:if="${events.isEmpty()}" class="card empty">No events yet.</div>
+    </main>
+</div>
+</body>
+</html>

@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head><meta charset="UTF-8"/><title>Reviews | TixCore</title><link rel="stylesheet" th:href="@{/css/style.css}"/></head>
+<body>
+<div class="layout">
+    <div th:replace="~{fragments/layout :: sidebar('reviews')}"></div>
+    <main class="main">
+        <div class="page-header">
+            <h2>Reviews</h2>
+            <a class="btn" th:href="@{/reviews/new}">+ New Review</a>
+        </div>
+        <table th:if="${!reviews.isEmpty()}">
+            <thead><tr><th>User</th><th>Event</th><th>Rating</th><th>Comment</th><th>Actions</th></tr></thead>
+            <tbody>
+                <tr th:each="r : ${reviews}">
+                    <td><span th:each="u : ${users}" th:if="${u.id == r.userId}" th:text="${u.username}"></span></td>
+                    <td><span th:each="e : ${events}" th:if="${e.id == r.eventId}" th:text="${e.title}"></span></td>
+                    <td th:text="${r.rating} + ' / 5'"></td>
+                    <td th:text="${r.comment}"></td>
+                    <td class="actions">
+                        <a class="btn btn-sm btn-secondary" th:href="@{'/reviews/' + ${r.id} + '/edit'}">Edit</a>
+                        <form th:action="@{'/reviews/' + ${r.id} + '/delete'}" method="post" style="display:inline;">
+                            <button class="btn btn-sm btn-danger" onclick="return confirm('Delete this review?')">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <div th:if="${reviews.isEmpty()}" class="card empty">No reviews yet.</div>
+    </main>
+</div>
+</body>
+</html>

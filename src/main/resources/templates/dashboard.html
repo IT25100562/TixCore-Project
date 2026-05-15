@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Dashboard | TixCore</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}"/>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+<div class="layout">
+    <div th:replace="~{fragments/layout :: sidebar('dashboard')}"></div>
+    <main class="main">
+        <div class="page-header">
+            <div>
+                <h2>Dashboard</h2>
+                <p>Overview of your ticket booking platform.</p>
+            </div>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card"><div class="label">Total Revenue</div><div class="value" th:text="'$' + ${#numbers.formatDecimal(totalRevenue, 1, 'COMMA', 2, 'POINT')}">$0</div></div>
+            <div class="stat-card"><div class="label">Bookings</div><div class="value" th:text="${totalBookings}">0</div></div>
+            <div class="stat-card"><div class="label">Events</div><div class="value" th:text="${totalEvents}">0</div></div>
+            <div class="stat-card"><div class="label">Users</div><div class="value" th:text="${totalUsers}">0</div></div>
+            <div class="stat-card"><div class="label">Venues</div><div class="value" th:text="${totalVenues}">0</div></div>
+            <div class="stat-card"><div class="label">Admins</div><div class="value" th:text="${totalAdmins}">0</div></div>
+            <div class="stat-card"><div class="label">Reviews</div><div class="value" th:text="${totalReviews}">0</div></div>
+            <div class="stat-card"><div class="label">Avg Rating</div><div class="value" th:text="${averageRating}">0</div></div>
+        </div>
+
+        <div class="dashboard-grid">
+            <div class="card">
+                <h3>Events by Category</h3>
+                <div class="chart-container">
+                    <canvas id="categoryChart"></canvas>
+                </div>
+            </div>
+            <div class="card">
+                <h3>Recent Events</h3>
+                <table th:if="${!recentEvents.isEmpty()}">
+                    <thead><tr><th>Title</th><th>Date</th></tr></thead>
+                    <tbody>
+                        <tr th:each="e : ${recentEvents}">
+                            <td th:text="${e.title}"></td>
+                            <td th:text="${e.date}"></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div th:if="${recentEvents.isEmpty()}" class="empty">No events yet.</div>
+            </div>
+        </div>
+
+        <script th:inline="javascript">
+            const labels = /*[[${categoryLabels}]]*/ [];
+            const values = /*[[${categoryValues}]]*/ [];
+            const ctx = document.getElementById('categoryChart');
+            if (ctx && labels.length > 0) {
+                new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Events',
+                            data: values,
+                            backgroundColor: 'rgba(124, 58, 237, 0.85)',
+                            borderColor: 'rgba(124, 58, 237, 1)',
+                            borderWidth: 0,
+                            borderRadius: 8,
+                            hoverBackgroundColor: 'rgba(109, 40, 217, 1)'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: false } },
+                        scales: {
+                            y: { beginAtZero: true, ticks: { precision: 0 }, grid: { color: '#f3f4f6' } },
+                            x: { grid: { display: false } }
+                        }
+                    }
+                });
+            }
+        </script>
+    </main>
+</div>
+</body>
+</html>
