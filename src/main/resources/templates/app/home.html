@@ -29,7 +29,7 @@
                 <p class="event-venue" th:text="${venueNames[e.venueId]}"></p>
                 <p class="event-desc" th:text="${e.description}"></p>
                 <div class="event-card-foot">
-                    <span class="event-price" th:text="'From $' + ${e.basePrice}"></span>
+                    <span class="event-price" th:text="'From Rs. ' + ${e.basePrice}"></span>
                     <span class="event-cta">View &rarr;</span>
                 </div>
             </div>

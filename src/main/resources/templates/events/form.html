@@ -23,7 +23,12 @@
                         <option value="Theatre">Theatre</option>
                     </select>
                 </div>
-                <div class="field"><label>Date</label><input type="date" th:field="*{date}" required/></div>
+                <div class="field"><label>Date</label>
+                    <input type="date" th:field="*{date}" required
+                           th:min="${event.id != null} ? '' : ${#temporals.format(#temporals.createToday(), 'yyyy-MM-dd')}"
+                           th:attr="min=${event.id != null} ? '' : ${#temporals.format(#temporals.createToday(), 'yyyy-MM-dd')}"/>
+                    <small th:if="${dateError}" th:text="${dateError}" style="color:#e53e3e;"></small>
+                </div>
                 <div class="field"><label>Time</label><input type="time" th:field="*{time}"/></div>
                 <div class="field"><label>Venue</label>
                     <select th:field="*{venueId}" required>
