@@ -8,6 +8,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+
 @Controller
 @RequestMapping("/events")
 public class EventController {
@@ -36,7 +38,18 @@ public class EventController {
     }
 
     @PostMapping
-    public String save(@ModelAttribute Event event) {
+    public String save(@ModelAttribute Event event, Model model) {
+        boolean isNew = event.getId() == null || event.getId().isBlank();
+        if (isNew && event.getDate() != null && !event.getDate().isBlank()) {
+            try {
+                LocalDate eventDate = LocalDate.parse(event.getDate());
+                if (eventDate.isBefore(LocalDate.now())) {
+                    model.addAttribute("dateError", "Event date cannot be in the past. Please select today or a future date.");
+                    model.addAttribute("venues", venueRepo.findAll());
+                    return "events/form";
+                }
+            } catch (Exception ignored) {}
+        }
         repo.save(event);
         return "redirect:/events";
     }
