@@ -31,7 +31,19 @@ public class AdminController {
     }
 
     @PostMapping
-    public String save(@ModelAttribute Admin admin) {
+    public String save(@ModelAttribute Admin admin,
+                       @RequestParam(name = "plainPassword", required = false) String plainPassword) {
+        boolean isNew = admin.getId() == null || admin.getId().isBlank();
+        if (isNew) {
+            admin.setPassword(plainPassword != null ? plainPassword.trim() : "");
+        } else {
+            if (plainPassword != null && !plainPassword.isBlank()) {
+                admin.setPassword(plainPassword.trim());
+            } else {
+                repo.findById(admin.getId())
+                    .ifPresent(existing -> admin.setPassword(existing.getPassword()));
+            }
+        }
         repo.save(admin);
         return "redirect:/admins";
     }
