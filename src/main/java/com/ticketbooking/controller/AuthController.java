@@ -19,6 +19,7 @@ public class AuthController {
     @Autowired private UserRepository userRepo;
     @Autowired private AdminRepository adminRepo;
 
+    // Show Login Page
     @GetMapping("/login")
     public String loginPage(Model model, HttpSession session) {
         if (SessionUtil.isLoggedIn(session)) {
@@ -27,27 +28,30 @@ public class AuthController {
         return "auth/login";
     }
 
+    // Process Login Form
     @PostMapping("/login")
     public String login(@RequestParam String username,
                         @RequestParam String password,
                         HttpSession session,
                         Model model) {
-        // Check admins first
+
+        // Check admin login first
         Optional<Admin> admin = adminRepo.findAll().stream()
-            .filter(a -> a.getUsername().equalsIgnoreCase(username) && password.equals(a.getPassword()))
-            .findFirst();
+                .filter(a -> a.getUsername().equalsIgnoreCase(username) && password.equals(a.getPassword()))
+                .findFirst();
         if (admin.isPresent()) {
-            SessionUtil.login(session, admin.get().getId(), admin.get().getUsername(),
-                              admin.get().getFullName(), "admin");
+            SessionUtil.loginAdmin(session, admin.get().getId(), admin.get().getUsername(),
+                    admin.get().getFullName(), admin.get().getRole());
             return "redirect:/";
         }
-        // Then users
+
+        // Check normal user login
         Optional<User> user = userRepo.findAll().stream()
-            .filter(u -> u.getUsername().equalsIgnoreCase(username) && password.equals(u.getPassword()))
-            .findFirst();
+                .filter(u -> u.getUsername().equalsIgnoreCase(username) && password.equals(u.getPassword()))
+                .findFirst();
         if (user.isPresent()) {
             SessionUtil.login(session, user.get().getId(), user.get().getUsername(),
-                              user.get().getFullName(), "user");
+                    user.get().getFullName(), "user");
             return "redirect:/app/home";
         }
         model.addAttribute("error", "Invalid username or password.");
@@ -55,6 +59,7 @@ public class AuthController {
         return "auth/login";
     }
 
+    // Show register page
     @GetMapping("/register")
     public String registerPage(Model model, HttpSession session) {
         if (SessionUtil.isLoggedIn(session)) {
@@ -63,6 +68,7 @@ public class AuthController {
         return "auth/register";
     }
 
+    // Process registration form
     @PostMapping("/register")
     public String register(@RequestParam String username,
                            @RequestParam String password,
@@ -71,8 +77,10 @@ public class AuthController {
                            @RequestParam(required = false) String phone,
                            HttpSession session,
                            Model model) {
+
+        // Check if username already exists
         boolean exists = userRepo.findAll().stream().anyMatch(u -> u.getUsername().equalsIgnoreCase(username))
-            || adminRepo.findAll().stream().anyMatch(a -> a.getUsername().equalsIgnoreCase(username));
+                || adminRepo.findAll().stream().anyMatch(a -> a.getUsername().equalsIgnoreCase(username));
         if (exists) {
             model.addAttribute("error", "Username already taken.");
             model.addAttribute("username", username);
@@ -81,6 +89,8 @@ public class AuthController {
             model.addAttribute("phone", phone);
             return "auth/register";
         }
+
+        // Create new user
         User u = new User();
         u.setUsername(username);
         u.setPassword(password);
@@ -92,6 +102,7 @@ public class AuthController {
         return "redirect:/app/home";
     }
 
+    // Logout
     @GetMapping("/logout")
     public String logout(HttpSession session) {
         SessionUtil.logout(session);
