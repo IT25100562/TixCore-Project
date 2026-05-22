@@ -5,9 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="dd0fcd1e-3aa7-419b-bde8-628386f917f7" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/ticketbooking/controller/ReviewController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/ticketbooking/repository/ReviewRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/ticketbooking/repository/ReviewRepository.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -83,7 +81,7 @@
     "RunOnceActivity.typescript.service.memoryLimit.init": "true",
     "git-widget-placeholder": "menushika",
     "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "/Users/menushikaherath/Projects/TixCore-Project/src/main/java/com/ticketbooking/controller",
+    "last_opened_file_path": "/Users/menushikaherath/ver2/TixCore-Project/src/main/java/com/ticketbooking/repository",
     "nodejs_package_manager_path": "npm",
     "settings.editor.selected.configurable": "editor.preferences.completion",
     "vue.rearranger.settings.migration": "true"
@@ -91,8 +89,9 @@
 }]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
-      <recent name="$PROJECT_DIR$/src/main/java/com/ticketbooking/controller" />
+      <recent name="$PROJECT_DIR$/src/main/java/com/ticketbooking/repository" />
       <recent name="$PROJECT_DIR$/src/main/java/com/ticketbooking/model" />
+      <recent name="$PROJECT_DIR$/src/main/java/com/ticketbooking/controller" />
     </key>
   </component>
   <component name="RunManager">
