@@ -4,6 +4,7 @@ import com.ticketbooking.model.Booking;
 import com.ticketbooking.model.Event;
 import com.ticketbooking.model.Review;
 import com.ticketbooking.repository.*;
+import com.ticketbooking.service.SeatService;
 import com.ticketbooking.util.SessionUtil;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +26,7 @@ public class UserAppController {
     @Autowired private BookingRepository bookingRepo;
     @Autowired private ReviewRepository reviewRepo;
     @Autowired private UserRepository userRepo;
+    @Autowired private SeatService seatService;
 
     @GetMapping("/home")
     public String home(@RequestParam(required = false) String q,
@@ -119,6 +121,11 @@ public class UserAppController {
             if (userId.equals(b.getUserId())) {
                 b.setStatus("cancelled");
                 bookingRepo.save(b);
+                if (b.getSeats() != null && !b.getSeats().isBlank()) {
+                    List<String> codes = java.util.Arrays.stream(b.getSeats().split(","))
+                            .map(String::trim).filter(s -> !s.isEmpty()).collect(Collectors.toList());
+                    seatService.releaseBookedSeats(b.getEventId(), codes);
+                }
             }
         });
         return "redirect:/app/my-bookings";

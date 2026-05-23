@@ -1,3 +1,5 @@
 a1|admin|admin@tixcore.com|System Admin|superadmin|2026-04-01T09:00:00Z|admin123
 a2|sarah|sarah@tixcore.com|Sarah Wijesinghe|manager|2026-04-01T09:00:00Z|sarah123
 a3|david|david@tixcore.com|David Bandara|support|2026-04-01T09:00:00Z|david123
+8e97566a-e4b2-4ced-a36b-3e4a7bf16a52|sanuthi|sann.j@gmail.com|sanuthi jayalath|support|2026-05-15T07:10:58.453587348Z|sanuthi123
+40881278-0cd8-4df4-b503-290a8cd410b8|dahara|dahara.ekanayake@gmail.com|dahara|manager|2026-05-15T07:15:08.504362679Z|dahara123
