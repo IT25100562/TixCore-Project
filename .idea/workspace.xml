@@ -3,201 +3,72 @@
   <component name="AutoImportSettings">
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
-
   <component name="ChangeListManager">
-<<<<<<< Updated upstream
-    <list default="true"
-          id="dd0fcd1e-3aa7-419b-bde8-628386f917f7"
-          name="Changes"
-          comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml"
-              beforeDir="false"
-              afterPath="$PROJECT_DIR$/.idea/workspace.xml"
-              afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/ticketbooking/controller/HomeController.java"
-              beforeDir="false"
-              afterPath="$PROJECT_DIR$/src/main/java/com/ticketbooking/controller/HomeController.java"
-              afterDir="false" />
-=======
-    <list default="true" id="dd0fcd1e-3aa7-419b-bde8-628386f917f7" name="Changes" comment="">
+    <list default="true" id="45e7db53-e985-4baa-be34-9bc0608ab243" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
->>>>>>> Stashed changes
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/ticketbooking/controller/EventController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/ticketbooking/controller/EventController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/ticketbooking/model/Event.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/ticketbooking/model/Event.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/ticketbooking/repository/EventRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/ticketbooking/repository/EventRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/app/event-detail.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/templates/app/event-detail.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/events/form.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/templates/events/form.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/events/list.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/templates/events/list.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/templates/dashboard.html" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/templates/dashboard.html" afterDir="false" />
     </list>
-
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
-
-  <component name="FileTemplateManagerImpl">
-    <option name="RECENT_TEMPLATES">
-      <list>
-        <option value="Class" />
-      </list>
-    </option>
-  </component>
-
-  <component name="Git.Settings">
-    <option name="RECENT_BRANCH_BY_REPOSITORY">
-      <map>
-        <entry key="$PROJECT_DIR$" value="main" />
-      </map>
-    </option>
-    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
-  </component>
-
-  <component name="GitHubPullRequestSearchHistory">{
-  &quot;lastFilter&quot;: {
-    &quot;state&quot;: &quot;OPEN&quot;,
-    &quot;assignee&quot;: &quot;IT25100562&quot;
-  }
-}</component>
-
-  <component name="GitToolBoxStore">
-    <option name="recentBranches">
-      <RecentBranches>
-        <option name="branchesForRepo">
-          <list>
-            <RecentBranchesForRepo>
-              <option name="branches">
-                <list>
-                  <RecentBranch>
-                    <option name="branchName" value="dulith's-branch" />
-                    <option name="lastUsedInstant" value="1778822226" />
-                  </RecentBranch>
-                  <RecentBranch>
-                    <option name="branchName" value="main" />
-                    <option name="lastUsedInstant" value="1778822225" />
-                  </RecentBranch>
-                </list>
-              </option>
-              <option name="repositoryRootUrl" value="file://$PROJECT_DIR$" />
-            </RecentBranchesForRepo>
-          </list>
-        </option>
-      </RecentBranches>
-    </option>
-  </component>
-
-  <component name="GithubPullRequestsUISettings">{
-  &quot;selectedUrlAndAccountId&quot;: {
-    &quot;url&quot;: &quot;https://github.com/IT25100562/TixCore-Project.git&quot;,
-    &quot;accountId&quot;: &quot;0a5dc07c-7d77-42ce-9edc-741173cada60&quot;
-  }
-}</component>
-
-  <component name="ProjectColorInfo">{
-  &quot;associatedIndex&quot;: 5,
-  &quot;fromUser&quot;: false
-}</component>
-
-  <component name="ProjectId" id="3DkMGKrimM6pYhrPWjQqwLjA8uf" />
-
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-<<<<<<< Updated upstream
-
-=======
->>>>>>> Stashed changes
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
-    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RequestMappingsPanelOrder0": "0",
+    "RequestMappingsPanelOrder1": "1",
+    "RequestMappingsPanelWidth0": "75",
+    "RequestMappingsPanelWidth1": "75",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.git.unshallow": "true",
     "RunOnceActivity.typescript.service.memoryLimit.init": "true",
-<<<<<<< Updated upstream
-    "git-widget-placeholder": "dulith's-branch",
-    "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "/Users/menushikaherath/ver2/TixCore-Project/src/main/java/com/ticketbooking/repository",
-=======
     "Spring Boot.TicketBookingApplication.executor": "Run",
     "git-widget-placeholder": "dulith's-branch",
     "kotlin-language-version-configured": "true",
->>>>>>> Stashed changes
     "nodejs_package_manager_path": "npm",
-    "settings.editor.selected.configurable": "editor.preferences.completion",
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
-<<<<<<< Updated upstream
-
-  <component name="RecentsManager">
-    <key name="CopyFile.RECENT_KEYS">
-      <recent name="$PROJECT_DIR$/src/main/java/com/ticketbooking/repository" />
-      <recent name="$PROJECT_DIR$/src/main/java/com/ticketbooking/model" />
-      <recent name="$PROJECT_DIR$/src/main/java/com/ticketbooking/controller" />
-    </key>
-  </component>
-
-=======
->>>>>>> Stashed changes
   <component name="RunManager">
-    <configuration name="TicketBookingApplication"
-                   type="SpringBootApplicationConfigurationType"
-                   factoryName="Spring Boot"
-                   nameIsGenerated="true">
+    <configuration name="TicketBookingApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
       <module name="ticket-booking" />
-      <option name="SPRING_BOOT_MAIN_CLASS"
-              value="com.ticketbooking.TicketBookingApplication" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="com.ticketbooking.TicketBookingApplication" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
     </configuration>
   </component>
-
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-jdk-30f59d01ecdd-2fc7cc6b9a17-intellij.indexing.shared.core-IU-253.31033.145" />
+        <option value="bundled-jdk-30f59d01ecdd-2fc7cc6b9a17-intellij.indexing.shared.core-IU-253.32098.101" />
+        <option value="bundled-js-predefined-d6986cc7102b-9b0f141eb926-JavaScript-IU-253.32098.101" />
       </set>
     </attachedChunks>
   </component>
-
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
-      <changelist id="dd0fcd1e-3aa7-419b-bde8-628386f917f7"
-                   name="Changes"
-                   comment="" />
-      <created>1778821519324</created>
+      <changelist id="45e7db53-e985-4baa-be34-9bc0608ab243" name="Changes" comment="" />
+      <created>1779550561745</created>
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
-      <updated>1778821519324</updated>
-      <workItem from="1778821531533" duration="2068000" />
-      <workItem from="1779516751742" duration="5000" />
-      <workItem from="1779516782490" duration="791000" />
+      <updated>1779550561745</updated>
+      <workItem from="1779550563267" duration="764000" />
     </task>
     <servers />
   </component>
-
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
   </component>
-
-  <component name="Vcs.Log.Tabs.Properties">
-    <option name="TAB_STATES">
-      <map>
-        <entry key="MAIN">
-          <value>
-            <State>
-              <option name="FILTERS">
-                <map>
-                  <entry key="branch">
-                    <value>
-                      <list>
-                        <option value="menushika" />
-                      </list>
-                    </value>
-                  </entry>
-                </map>
-              </option>
-            </State>
-          </value>
-        </entry>
-      </map>
-    </option>
-  </component>
-
 </project>

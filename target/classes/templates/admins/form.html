@@ -20,6 +20,11 @@
                         <option value="support">Support</option>
                     </select>
                 </div>
+                <div class="field">
+                    <label th:text="${admin.id != null} ? 'Password (leave blank to keep current)' : 'Password'">Password</label>
+                    <input type="password" name="plainPassword"
+                           th:required="${admin.id == null}"/>
+                </div>
                 <div class="actions">
                     <button class="btn" type="submit">Save</button>
                     <a class="btn btn-secondary" th:href="@{/admins}">Cancel</a>

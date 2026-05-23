@@ -10,78 +10,304 @@
 <div class="layout">
     <div th:replace="~{fragments/layout :: sidebar('dashboard')}"></div>
     <main class="main">
+
+        <!-- ── Access denied alert ─────────────────────────────────── -->
+        <div th:if="${param.accessDenied}" class="alert alert-danger"
+             style="background:#fef2f2;color:#991b1b;border:1px solid #fecaca;padding:12px 16px;border-radius:8px;margin-bottom:16px;font-weight:500;">
+            ⛔ Access Denied — You do not have permission to perform that action.
+        </div>
+
+        <!-- ── Page header ─────────────────────────────────────────── -->
         <div class="page-header">
             <div>
                 <h2>Dashboard</h2>
-                <p>Overview of your ticket booking platform.</p>
+                <p>Platform overview and analytics</p>
+            </div>
+            <div class="actions">
+                <!-- Support: no write buttons at all -->
+                <a th:unless="${session.adminRole == 'support'}" class="btn btn-sm" th:href="@{/events/new}">+ New Event</a>
+                <a class="btn btn-sm btn-secondary" th:href="@{/bookings}">All Bookings</a>
+                <!-- Manage Users: only for super_admin -->
+                <a th:if="${session.adminRole == 'superadmin' or session.adminRole == 'super_admin'}"
+                   class="btn btn-sm btn-secondary" th:href="@{/users}">Manage Users</a>
             </div>
         </div>
 
+        <!-- ── KPI stats row 1 ─────────────────────────────────────── -->
         <div class="stats-grid">
-            <div class="stat-card"><div class="label">Total Revenue</div><div class="value" th:text="'$' + ${#numbers.formatDecimal(totalRevenue, 1, 'COMMA', 2, 'POINT')}">$0</div></div>
-            <div class="stat-card"><div class="label">Bookings</div><div class="value" th:text="${totalBookings}">0</div></div>
-            <div class="stat-card"><div class="label">Events</div><div class="value" th:text="${totalEvents}">0</div></div>
-            <div class="stat-card"><div class="label">Users</div><div class="value" th:text="${totalUsers}">0</div></div>
-            <div class="stat-card"><div class="label">Venues</div><div class="value" th:text="${totalVenues}">0</div></div>
-            <div class="stat-card"><div class="label">Admins</div><div class="value" th:text="${totalAdmins}">0</div></div>
-            <div class="stat-card"><div class="label">Reviews</div><div class="value" th:text="${totalReviews}">0</div></div>
-            <div class="stat-card"><div class="label">Avg Rating</div><div class="value" th:text="${averageRating}">0</div></div>
+            <div class="stat-card" style="border-left-color:#10b981;">
+                <div class="label">Total Revenue</div>
+                <div class="value" th:text="'Rs. ' + ${#numbers.formatDecimal(totalRevenue,1,'COMMA',0,'POINT')}">Rs. 0</div>
+                <div class="stat-sub">active bookings only</div>
+            </div>
+            <div class="stat-card" style="border-left-color:#7c3aed;">
+                <div class="label">Confirmed</div>
+                <div class="value" th:text="${confirmedBookings}">0</div>
+                <div class="stat-sub">bookings</div>
+            </div>
+            <div class="stat-card" style="border-left-color:#dc2626;">
+                <div class="label">Cancelled</div>
+                <div class="value" th:text="${cancelledBookings}">0</div>
+                <div class="stat-sub">bookings</div>
+            </div>
+            <div class="stat-card" style="border-left-color:#3b82f6;">
+                <div class="label">Events</div>
+                <div class="value" th:text="${totalEvents}">0</div>
+                <div class="stat-sub">total listed</div>
+            </div>
+            <div class="stat-card" style="border-left-color:#ec4899;">
+                <div class="label">Users</div>
+                <div class="value" th:text="${totalUsers}">0</div>
+                <div class="stat-sub">registered</div>
+            </div>
+            <div class="stat-card" style="border-left-color:#f59e0b;">
+                <div class="label">Venues</div>
+                <div class="value" th:text="${totalVenues}">0</div>
+                <div class="stat-sub">available</div>
+            </div>
+            <div class="stat-card" style="border-left-color:#06b6d4;">
+                <div class="label">Reviews</div>
+                <div class="value" th:text="${totalReviews}">0</div>
+                <div class="stat-sub">submitted</div>
+            </div>
+            <div class="stat-card" style="border-left-color:#f97316;">
+                <div class="label">Avg Rating</div>
+                <div class="value" th:text="${averageRating}">0</div>
+                <div class="stat-sub">out of 5</div>
+            </div>
         </div>
 
+        <!-- ── Charts row 1 — Revenue + Booking status ─────────────── -->
+        <div class="dashboard-grid dash-3-2">
+            <div class="card">
+                <div class="card-head">
+                    <h3>Revenue by Month</h3>
+                    <span class="card-badge card-badge-green">Income</span>
+                </div>
+                <div class="chart-container" style="height:280px;">
+                    <canvas id="revenueChart"></canvas>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-head">
+                    <h3>Booking Status</h3>
+                    <span class="card-badge">Distribution</span>
+                </div>
+                <div class="chart-container" style="height:280px;">
+                    <canvas id="statusChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- ── Charts row 2 — Category bar + Top events table ───────── -->
         <div class="dashboard-grid">
             <div class="card">
-                <h3>Events by Category</h3>
-                <div class="chart-container">
+                <div class="card-head">
+                    <h3>Events by Category</h3>
+                    <span class="card-badge">Breakdown</span>
+                </div>
+                <div class="chart-container" style="height:260px;">
                     <canvas id="categoryChart"></canvas>
                 </div>
             </div>
             <div class="card">
-                <h3>Recent Events</h3>
-                <table th:if="${!recentEvents.isEmpty()}">
-                    <thead><tr><th>Title</th><th>Date</th></tr></thead>
-                    <tbody>
-                        <tr th:each="e : ${recentEvents}">
-                            <td th:text="${e.title}"></td>
-                            <td th:text="${e.date}"></td>
-                        </tr>
-                    </tbody>
-                </table>
-                <div th:if="${recentEvents.isEmpty()}" class="empty">No events yet.</div>
+                <div class="card-head">
+                    <h3>Top Events</h3>
+                    <span class="card-badge card-badge-green">by Revenue</span>
+                </div>
+                <div th:if="${!topEvents.isEmpty()}">
+                    <table class="inner-table">
+                        <thead><tr><th>Event</th><th>Bkgs</th><th>Revenue</th></tr></thead>
+                        <tbody>
+                            <tr th:each="te, i : ${topEvents}">
+                                <td>
+                                    <span class="rank-badge" th:text="${i.index + 1}">1</span>
+                                    <span th:text="${te.title}">Event</span>
+                                </td>
+                                <td th:text="${te.bookings}">0</td>
+                                <td th:text="'Rs. ' + ${#numbers.formatDecimal(te.revenue,1,'COMMA',0,'POINT')}">Rs. 0</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div th:if="${topEvents.isEmpty()}" class="empty">No bookings yet.</div>
             </div>
         </div>
 
-        <script th:inline="javascript">
-            const labels = /*[[${categoryLabels}]]*/ [];
-            const values = /*[[${categoryValues}]]*/ [];
-            const ctx = document.getElementById('categoryChart');
-            if (ctx && labels.length > 0) {
-                new Chart(ctx, {
-                    type: 'bar',
-                    data: {
-                        labels: labels,
-                        datasets: [{
-                            label: 'Events',
-                            data: values,
-                            backgroundColor: 'rgba(124, 58, 237, 0.85)',
-                            borderColor: 'rgba(124, 58, 237, 1)',
-                            borderWidth: 0,
-                            borderRadius: 8,
-                            hoverBackgroundColor: 'rgba(109, 40, 217, 1)'
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: { legend: { display: false } },
-                        scales: {
-                            y: { beginAtZero: true, ticks: { precision: 0 }, grid: { color: '#f3f4f6' } },
-                            x: { grid: { display: false } }
-                        }
-                    }
-                });
-            }
-        </script>
+        <!-- ── Recent bookings — full width ─────────────────────────── -->
+        <div class="card">
+            <div class="card-head">
+                <h3>Recent Bookings</h3>
+                <a class="card-link" th:href="@{/bookings}">View all &rarr;</a>
+            </div>
+            <div th:if="${!recentBookings.isEmpty()}">
+                <table class="inner-table">
+                    <thead>
+                        <tr><th>User</th><th>Event</th><th>Seats</th><th>Total</th><th>Status</th><th>Date</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="b : ${recentBookings}">
+                            <td th:text="${b.user}">User</td>
+                            <td th:text="${b.event}">Event</td>
+                            <td th:text="${b.seats}">A1</td>
+                            <td th:text="'Rs. ' + ${#numbers.formatDecimal(b.total,1,'COMMA',0,'POINT')}">Rs. 0</td>
+                            <td>
+                                <span class="badge"
+                                      th:classappend="${b.status != null ? 'badge-' + b.status : ''}"
+                                      th:text="${b.status}">confirmed</span>
+                            </td>
+                            <td th:text="${b.date}">2026-01-01</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div th:if="${recentBookings.isEmpty()}" class="empty">No bookings yet.</div>
+        </div>
+
+        <!-- ── Recent events ─────────────────────────────────────────── -->
+        <div class="card">
+            <div class="card-head">
+                <h3>Recently Added Events</h3>
+                <a class="card-link" th:href="@{/events}">View all &rarr;</a>
+            </div>
+            <div th:if="${!recentEvents.isEmpty()}">
+                <table class="inner-table">
+                    <thead><tr><th>Title</th><th>Category</th><th>Date</th><th>Base Price</th><th>Status</th></tr></thead>
+                    <tbody>
+                        <tr th:each="e : ${recentEvents}">
+                            <td th:text="${e.title}">Event</td>
+                            <td><span class="badge badge-scheduled" th:text="${e.category}">Category</span></td>
+                            <td th:text="${e.date}">Date</td>
+                            <td th:text="'Rs. ' + ${e.basePrice}">Rs. 0</td>
+                            <td>
+                                <span class="badge"
+                                      th:classappend="${e.status != null ? 'badge-' + e.status : 'badge-scheduled'}"
+                                      th:text="${e.status != null ? e.status : 'scheduled'}">scheduled</span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div th:if="${recentEvents.isEmpty()}" class="empty">No events yet.</div>
+        </div>
+
     </main>
 </div>
+
+<script th:inline="javascript">
+    const BRAND   = 'rgba(124, 58, 237, 0.85)';
+    const BRAND_S = 'rgba(124, 58, 237, 0.15)';
+    const GREEN   = 'rgba(16, 185, 129, 0.85)';
+    const GREEN_S = 'rgba(16, 185, 129, 0.15)';
+    const RED     = 'rgba(220, 38, 38, 0.85)';
+
+    const isDark = () => document.documentElement.getAttribute('data-theme') === 'dark';
+    const gridColor = () => isDark() ? '#334155' : '#f3f4f6';
+    const tickColor = () => isDark() ? '#94a3b8' : '#6b7280';
+
+    window.__chartInstances = [];
+
+    Chart.defaults.font.family = "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif";
+    Chart.defaults.font.size   = 13;
+
+    // ── Revenue by month (line) ─────────────────────────────────────
+    const revenueLabels = /*[[${revenueLabels}]]*/ [];
+    const revenueValues = /*[[${revenueValues}]]*/ [];
+    const revCtx = document.getElementById('revenueChart');
+    if (revCtx) {
+        window.__chartInstances.push(new Chart(revCtx, {
+            type: 'line',
+            data: {
+                labels: revenueLabels,
+                datasets: [{
+                    label: 'Revenue (Rs.)',
+                    data: revenueValues,
+                    borderColor: 'rgba(16,185,129,1)',
+                    backgroundColor: GREEN_S,
+                    borderWidth: 2.5,
+                    pointBackgroundColor: 'rgba(16,185,129,1)',
+                    pointRadius: 5,
+                    tension: 0.4,
+                    fill: true,
+                }]
+            },
+            options: {
+                responsive: true, maintainAspectRatio: false,
+                plugins: { legend: { display: false },
+                           tooltip: { callbacks: { label: ctx => ' Rs. ' + ctx.parsed.y.toLocaleString() } } },
+                scales: {
+                    y: { beginAtZero: true,
+                         grid: { color: gridColor() },
+                         ticks: { color: tickColor(), callback: v => 'Rs. ' + v.toLocaleString() } },
+                    x: { grid: { display: false }, ticks: { color: tickColor() } }
+                }
+            }
+        }));
+    }
+
+    // ── Booking status (doughnut) ───────────────────────────────────
+    const statusLabels = /*[[${statusLabels}]]*/ ['Confirmed','Cancelled'];
+    const statusValues = /*[[${statusValues}]]*/ [0,0];
+    const stCtx = document.getElementById('statusChart');
+    if (stCtx) {
+        window.__chartInstances.push(new Chart(stCtx, {
+            type: 'doughnut',
+            data: {
+                labels: statusLabels,
+                datasets: [{
+                    data: statusValues,
+                    backgroundColor: [BRAND, RED],
+                    hoverBackgroundColor: ['rgba(109,40,217,1)', 'rgba(185,28,28,1)'],
+                    borderWidth: 0,
+                    spacing: 2,
+                }]
+            },
+            options: {
+                responsive: true, maintainAspectRatio: false,
+                cutout: '68%',
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: { padding: 18, usePointStyle: true, color: tickColor() }
+                    },
+                    tooltip: { callbacks: { label: ctx => ' ' + ctx.label + ': ' + ctx.parsed } }
+                }
+            }
+        }));
+    }
+
+    // ── Events by category (bar) ────────────────────────────────────
+    const catLabels = /*[[${categoryLabels}]]*/ [];
+    const catValues = /*[[${categoryValues}]]*/ [];
+    const catCtx = document.getElementById('categoryChart');
+    if (catCtx && catLabels.length > 0) {
+        const catColors = [BRAND,'rgba(236,72,153,0.85)','rgba(59,130,246,0.85)',
+                           'rgba(245,158,11,0.85)','rgba(16,185,129,0.85)',
+                           'rgba(239,68,68,0.85)','rgba(6,182,212,0.85)'];
+        window.__chartInstances.push(new Chart(catCtx, {
+            type: 'bar',
+            data: {
+                labels: catLabels,
+                datasets: [{
+                    label: 'Events',
+                    data: catValues,
+                    backgroundColor: catColors.slice(0, catLabels.length),
+                    borderRadius: 8,
+                    borderWidth: 0,
+                }]
+            },
+            options: {
+                responsive: true, maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: { beginAtZero: true,
+                         ticks: { precision: 0, color: tickColor() },
+                         grid: { color: gridColor() } },
+                    x: { grid: { display: false }, ticks: { color: tickColor() } }
+                }
+            }
+        }));
+    }
+</script>
 </body>
 </html>
