@@ -30,16 +30,21 @@ public class SessionUtil {
     }
 
     // Removes underscores and converts text to lowercase
+    // Example: "super_admin" -> "superadmin"
     private static String normalizeRole(HttpSession s) {
 
         // Returns empty string if not admin
-        if (!isAdmin(s)) return "";
+        if (!isAdmin(s)) {
+            return "";
+        }
 
         // Retrieves admin role from session
         String ar = (String) s.getAttribute(ADMIN_ROLE);
 
         // Returns normalized role name
-        return ar == null ? "" : ar.replace("_", "").trim().toLowerCase();
+        return ar == null
+                ? ""
+                : ar.replace("_", "").trim().toLowerCase();
     }
 
     // Checks whether the logged-in admin is a super admin
@@ -59,33 +64,57 @@ public class SessionUtil {
 
     // Returns the raw admin role value
     public static String getAdminRole(HttpSession s) {
-        if (!isAdmin(s)) return "";
+
+        if (!isAdmin(s)) {
+            return "";
+        }
+
         String ar = (String) s.getAttribute(ADMIN_ROLE);
+
         return ar == null ? "" : ar;
     }
 
     // Stores login session data for normal users
-    public static void login(HttpSession s, String id, String username, String fullName, String role) {
+    public static void login(
+            HttpSession s,
+            String id,
+            String username,
+            String fullName,
+            String role
+    ) {
 
         // Stores user session attributes
         s.setAttribute(USER_ID, id);
         s.setAttribute(USERNAME, username);
         s.setAttribute(FULL_NAME, fullName);
         s.setAttribute(ROLE, role);
+
         // Removes admin role for normal users
         s.removeAttribute(ADMIN_ROLE);
     }
 
     // Stores login session data for admin accounts
-    public static void loginAdmin(HttpSession s, String id, String username, String fullName, String adminRole) {
+    public static void loginAdmin(
+            HttpSession s,
+            String id,
+            String username,
+            String fullName,
+            String adminRole
+    ) {
 
         // Stores admin session attributes
         s.setAttribute(USER_ID, id);
         s.setAttribute(USERNAME, username);
         s.setAttribute(FULL_NAME, fullName);
         s.setAttribute(ROLE, "admin");
+
         // Stores normalized admin sub-role
-        s.setAttribute(ADMIN_ROLE, adminRole == null ? "" : adminRole.trim().toLowerCase());
+        s.setAttribute(
+                ADMIN_ROLE,
+                adminRole == null
+                        ? ""
+                        : adminRole.trim().toLowerCase()
+        );
     }
 
     // Clears the current session and logs out the user

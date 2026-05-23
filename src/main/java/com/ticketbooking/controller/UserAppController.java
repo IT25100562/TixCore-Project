@@ -12,7 +12,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -22,43 +21,72 @@ import java.util.stream.Collectors;
 
 // Base URL mapping for all user application requests
 @RequestMapping("/app")
-
 public class UserAppController {
 
     // Automatically injects repository and service objects
-    @Autowired private EventRepository eventRepo;
-    @Autowired private VenueRepository venueRepo;
-    @Autowired private BookingRepository bookingRepo;
-    @Autowired private ReviewRepository reviewRepo;
-    @Autowired private UserRepository userRepo;
-    @Autowired private SeatService seatService;
+    @Autowired
+    private EventRepository eventRepo;
+
+    @Autowired
+    private VenueRepository venueRepo;
+
+    @Autowired
+    private BookingRepository bookingRepo;
+
+    @Autowired
+    private ReviewRepository reviewRepo;
+
+    @Autowired
+    private UserRepository userRepo;
+
+    @Autowired
+    private SeatService seatService;
 
     // Displays the home page with event listings
     @GetMapping("/home")
-    public String home(@RequestParam(required = false) String q,
-                       @RequestParam(required = false) String category,
-                       Model model) {
+    public String home(
+            @RequestParam(required = false) String q,
+            @RequestParam(required = false) String category,
+            Model model
+    ) {
 
         // Retrieves and filters events
         List<Event> events = eventRepo.findAll().stream()
 
                 // Shows only scheduled events
-                .filter(e -> "scheduled".equalsIgnoreCase(e.getStatus()) || e.getStatus() == null || e.getStatus().isEmpty())
+                .filter(e ->
+                        "scheduled".equalsIgnoreCase(e.getStatus())
+                                || e.getStatus() == null
+                                || e.getStatus().isEmpty()
+                )
 
                 // Filters events using search keyword
-                .filter(e -> q == null || q.isBlank()
-                        || e.getTitle().toLowerCase().contains(q.toLowerCase())
-                        || (e.getDescription() != null && e.getDescription().toLowerCase().contains(q.toLowerCase())))
+                .filter(e ->
+                        q == null
+                                || q.isBlank()
+                                || e.getTitle().toLowerCase().contains(q.toLowerCase())
+                                || (
+                                e.getDescription() != null
+                                        && e.getDescription().toLowerCase().contains(q.toLowerCase())
+                        )
+                )
 
                 // Filters events by category
-                .filter(e -> category == null || category.isBlank() || category.equalsIgnoreCase(e.getCategory()))
+                .filter(e ->
+                        category == null
+                                || category.isBlank()
+                                || category.equalsIgnoreCase(e.getCategory())
+                )
 
                 // Converts stream back into a list
                 .collect(Collectors.toList());
 
         // Creates a map of venue IDs and venue names
         Map<String, String> venueNames = venueRepo.findAll().stream()
-                .collect(Collectors.toMap(v -> v.getId(), v -> v.getName()));
+                .collect(Collectors.toMap(
+                        v -> v.getId(),
+                        v -> v.getName()
+                ));
 
         // Adds data to the model
         model.addAttribute("events", events);
@@ -69,7 +97,18 @@ public class UserAppController {
         model.addAttribute("category", category == null ? "" : category);
 
         // Adds predefined event categories
-        model.addAttribute("categories", List.of("Concert", "Conference", "Comedy", "Festival", "Networking", "Sports", "Theatre"));
+        model.addAttribute(
+                "categories",
+                List.of(
+                        "Concert",
+                        "Conference",
+                        "Comedy",
+                        "Festival",
+                        "Networking",
+                        "Sports",
+                        "Theatre"
+                )
+        );
 
         return "app/home";
     }
@@ -81,19 +120,33 @@ public class UserAppController {
         // Finds the event by ID
         Event ev = eventRepo.findById(id).orElse(null);
 
-        if (ev == null) return "redirect:/app/home";
+        if (ev == null) {
+            return "redirect:/app/home";
+        }
 
         // Adds event and venue details to the model
         model.addAttribute("event", ev);
-        model.addAttribute("venue", venueRepo.findById(ev.getVenueId()).orElse(null));
+        model.addAttribute(
+                "venue",
+                venueRepo.findById(ev.getVenueId()).orElse(null)
+        );
 
         // Retrieves reviews related to the event
         List<Review> reviews = reviewRepo.findAll().stream()
-                .filter(r -> id.equals(r.getEventId())).collect(Collectors.toList());
+                .filter(r -> id.equals(r.getEventId()))
+                .collect(Collectors.toList());
 
         // Creates a map of user IDs and display names
         Map<String, String> userNames = userRepo.findAll().stream()
-                .collect(Collectors.toMap(u -> u.getId(), u -> u.getFullName() != null && !u.getFullName().isBlank() ? u.getFullName() : u.getUsername()));
+                .collect(Collectors.toMap(
+                        u -> u.getId(),
+                        u -> (
+                                u.getFullName() != null
+                                        && !u.getFullName().isBlank()
+                        )
+                                ? u.getFullName()
+                                : u.getUsername()
+                ));
 
         // Adds reviews and usernames to the model
         model.addAttribute("reviews", reviews);
@@ -104,20 +157,30 @@ public class UserAppController {
 
     // Handles ticket booking requests
     @PostMapping("/event/{id}/book")
-    public String book(@PathVariable String id,
-                       @RequestParam String seats,
-                       HttpSession session,
-                       Model model) {
+    public String book(
+            @PathVariable String id,
+            @RequestParam String seats,
+            HttpSession session,
+            Model model
+    ) {
 
         Event ev = eventRepo.findById(id).orElse(null);
-        if (ev == null) return "redirect:/app/home";
+
+        if (ev == null) {
+            return "redirect:/app/home";
+        }
+
         String userId = (String) session.getAttribute(SessionUtil.USER_ID);
 
         // Counts the number of selected seats
-        int seatCount = seats == null || seats.isBlank() ? 0 : seats.split(",").length;
+        int seatCount = seats == null || seats.isBlank()
+                ? 0
+                : seats.split(",").length;
 
         // Redirects if no seats are selected
-        if (seatCount == 0) return "redirect:/app/event/" + id;
+        if (seatCount == 0) {
+            return "redirect:/app/event/" + id;
+        }
 
         Booking b = new Booking();
 
@@ -125,8 +188,10 @@ public class UserAppController {
         b.setUserId(userId);
         b.setEventId(id);
         b.setSeats(seats);
+
         // Calculates total booking price
         b.setTotalPrice(ev.getBasePrice() * seatCount);
+
         b.setStatus("confirmed");
         bookingRepo.save(b);
 
@@ -135,13 +200,19 @@ public class UserAppController {
 
     // Handles review submission for events
     @PostMapping("/event/{id}/review")
-    public String submitReview(@PathVariable String id,
-                               @RequestParam int rating,
-                               @RequestParam String comment,
-                               HttpSession session) {
+    public String submitReview(
+            @PathVariable String id,
+            @RequestParam int rating,
+            @RequestParam String comment,
+            HttpSession session
+    ) {
 
-        if (eventRepo.findById(id).isEmpty()) return "redirect:/app/home";
+        if (eventRepo.findById(id).isEmpty()) {
+            return "redirect:/app/home";
+        }
+
         String userId = (String) session.getAttribute(SessionUtil.USER_ID);
+
         Review r = new Review();
 
         // Stores review information
@@ -153,6 +224,7 @@ public class UserAppController {
 
         // Stores review comment with null safety check
         r.setComment(comment == null ? "" : comment);
+
         reviewRepo.save(r);
 
         return "redirect:/app/event/" + id;
@@ -171,14 +243,19 @@ public class UserAppController {
                 .filter(b -> userId.equals(b.getUserId()))
 
                 // Sorts bookings by newest first
-                .sorted((a, b) -> b.getCreatedAt().compareTo(a.getCreatedAt()))
+                .sorted((a, b) ->
+                        b.getCreatedAt().compareTo(a.getCreatedAt())
+                )
 
                 // Converts stream back into a list
                 .collect(Collectors.toList());
 
         // Creates a map of event IDs and event titles
         Map<String, String> eventTitles = eventRepo.findAll().stream()
-                .collect(Collectors.toMap(e -> e.getId(), e -> e.getTitle()));
+                .collect(Collectors.toMap(
+                        e -> e.getId(),
+                        e -> e.getTitle()
+                ));
 
         // Adds bookings and event titles to the model
         model.addAttribute("bookings", mine);
@@ -189,8 +266,13 @@ public class UserAppController {
 
     // Handles booking cancellation requests
     @PostMapping("/booking/{id}/cancel")
-    public String cancelBooking(@PathVariable String id, HttpSession session) {
+    public String cancelBooking(
+            @PathVariable String id,
+            HttpSession session
+    ) {
+
         String userId = (String) session.getAttribute(SessionUtil.USER_ID);
+
         bookingRepo.findById(id).ifPresent(b -> {
 
             // Ensures users can cancel only their own bookings
@@ -204,11 +286,18 @@ public class UserAppController {
                 if (b.getSeats() != null && !b.getSeats().isBlank()) {
 
                     // Converts seat string into a list
-                    List<String> codes = java.util.Arrays.stream(b.getSeats().split(","))
-                            .map(String::trim).filter(s -> !s.isEmpty()).collect(Collectors.toList());
+                    List<String> codes = java.util.Arrays.stream(
+                                    b.getSeats().split(",")
+                            )
+                            .map(String::trim)
+                            .filter(s -> !s.isEmpty())
+                            .collect(Collectors.toList());
 
                     // Makes cancelled seats available again
-                    seatService.releaseBookedSeats(b.getEventId(), codes);
+                    seatService.releaseBookedSeats(
+                            b.getEventId(),
+                            codes
+                    );
                 }
             }
         });

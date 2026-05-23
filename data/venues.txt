@@ -1,3 +1,10 @@
-v1|Aurora Hall|123 Galle Road|Colombo|2500|2026-04-01T08:00:00Z
+v1|Nelum Pokuna Theatre|Bauddhaloka Mawatha|Colombo|2700|2026-04-01T08:00:00Z
 v2|BMICH|Bauddhaloka Mawatha|Colombo|5000|2026-04-01T08:00:00Z
-v3|Coastal Pavilion|Beach Road|Galle|1500|2026-04-01T08:00:00Z
+v3|Galle Face Hotel Ballroom|2 Kollupitiya Road|Colombo|800|2026-04-01T08:00:00Z
+v4|Shangri-La Colombo Ballroom|1 Galle Face Terrace|Colombo|1200|2026-04-01T08:00:00Z
+v5|Waters Edge Ballroom|Mahenwatta Road|Battaramulla|3000|2026-04-01T08:00:00Z
+v6|Earl's Regency Grand Hall|Katugastota Road|Kandy|1500|2026-04-01T08:00:00Z
+v7|OZO Kandy|Peradeniya Road|Kandy|600|2026-04-01T08:00:00Z
+v8|Jetwing Lighthouse|Dadella|Galle|500|2026-04-01T08:00:00Z
+v9|Mirissa Hills Amphitheatre|Mirissa Road|Matara|2000|2026-04-01T08:00:00Z
+v10|Jaffna Cultural Centre|Hospital Road|Jaffna|800|2026-04-01T08:00:00Z
