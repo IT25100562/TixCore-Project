@@ -6,17 +6,24 @@
     <div th:replace="~{fragments/layout :: sidebar('users')}"></div>
     <main class="main">
         <div class="page-header">
-            <h2>Users</h2>
+            <div><h2>Users</h2><p th:text="${users.size()} + ' registered users'"></p></div>
             <a class="btn" th:href="@{/users/new}">+ New User</a>
         </div>
-        <table th:if="${!users.isEmpty()}">
-            <thead><tr><th>Username</th><th>Full Name</th><th>Email</th><th>Phone</th><th>Actions</th></tr></thead>
+        <div class="list-toolbar">
+            <div class="search-wrap">
+                <span class="search-icon">&#9906;</span>
+                <input class="search-input" id="searchInput" type="text" placeholder="Search by username, name or email…" oninput="filterTable()"/>
+            </div>
+        </div>
+        <table id="dataTable" th:if="${!users.isEmpty()}">
+            <thead><tr><th>Username</th><th>Full Name</th><th>Email</th><th>Phone</th><th>Joined</th><th>Actions</th></tr></thead>
             <tbody>
                 <tr th:each="u : ${users}">
                     <td th:text="${u.username}"></td>
                     <td th:text="${u.fullName}"></td>
                     <td th:text="${u.email}"></td>
                     <td th:text="${u.phone}"></td>
+                    <td th:text="${#strings.substring(u.createdAt,0,10)}"></td>
                     <td class="actions">
                         <a class="btn btn-sm btn-secondary" th:href="@{'/users/' + ${u.id} + '/edit'}">Edit</a>
                         <form th:action="@{'/users/' + ${u.id} + '/delete'}" method="post" style="display:inline;">
@@ -26,8 +33,23 @@
                 </tr>
             </tbody>
         </table>
+        <div id="noResults" class="card empty" style="display:none;">No users match your search.</div>
         <div th:if="${users.isEmpty()}" class="card empty">No users yet.</div>
     </main>
 </div>
+<script>
+function filterTable() {
+    var q = document.getElementById('searchInput').value.toLowerCase();
+    var rows = document.querySelectorAll('#dataTable tbody tr');
+    var visible = 0;
+    rows.forEach(function(row) {
+        var text = row.textContent.toLowerCase();
+        var show = !q || text.includes(q);
+        row.style.display = show ? '' : 'none';
+        if (show) visible++;
+    });
+    document.getElementById('noResults').style.display = (visible === 0 && q) ? '' : 'none';
+}
+</script>
 </body>
 </html>

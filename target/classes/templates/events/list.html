@@ -1,20 +1,62 @@
 <!DOCTYPE html>
+<!-- Defines HTML5 document -->
+
 <html xmlns:th="http://www.thymeleaf.org">
-<head><meta charset="UTF-8"/><title>Events | TixCore</title><link rel="stylesheet" th:href="@{/css/style.css}"/></head>
+<!-- Enables Thymeleaf template engine -->
+
+<head>
+    <meta charset="UTF-8"/>
+    <!-- Character encoding -->
+
+    <title>Events | TixCore</title>
+    <!-- Page title -->
+
+    <!-- Link CSS -->
+    <link rel="stylesheet" th:href="@{/css/style.css}"/>
+</head>
+
 <body>
 <div class="layout">
+
+    <!-- Sidebar (reusable layout component) -->
     <div th:replace="~{fragments/layout :: sidebar('events')}"></div>
+
     <main class="main">
+
+        <!-- Page header -->
         <div class="page-header">
-            <div><h2>Events</h2><p th:text="${events.size()} + ' events listed'"></p></div>
-            <a th:unless="${session.adminRole == 'support'}" class="btn" th:href="@{/events/new}">+ New Event</a>
+
+            <!-- Title + total event count -->
+            <div>
+                <h2>Events</h2>
+                <!-- Display number of events -->
+                <p th:text="${events.size()} + ' events listed'"></p>
+            </div>
+
+            <!-- Show 'New Event' button only if admin is NOT support -->
+            <a th:unless="${session.adminRole == 'support'}"
+               class="btn"
+               th:href="@{/events/new}">
+                + New Event
+            </a>
         </div>
+
+        <!-- Search + Filter section -->
         <div class="list-toolbar">
+
+            <!-- Search box -->
             <div class="search-wrap">
                 <span class="search-icon">&#9906;</span>
-                <input class="search-input" id="searchInput" type="text" placeholder="Search by title, venue…" oninput="filterTable()"/>
+                <!-- Calls JS filter function -->
+                <input class="search-input" id="searchInput" type="text"
+                       placeholder="Search by title, venue…"
+                       oninput="filterTable()"/>
             </div>
+
+            <!-- Filters -->
             <div class="filter-wrap">
+
+                <!-- Category filter -->
                 <select class="filter-select" id="catFilter" onchange="filterTable()">
                     <option value="">All Categories</option>
                     <option>Concert</option>
@@ -25,64 +67,162 @@
                     <option>Sports</option>
                     <option>Theatre</option>
                 </select>
+
+                <!-- Status filter -->
                 <select class="filter-select" id="statusFilter" onchange="filterTable()">
                     <option value="">All Statuses</option>
                     <option>scheduled</option>
                     <option>completed</option>
                     <option>cancelled</option>
                 </select>
+
             </div>
         </div>
+
+        <!-- Table displayed only if events exist -->
         <table id="dataTable" th:if="${!events.isEmpty()}">
-            <thead><tr><th>Title</th><th>Category</th><th>Date</th><th>Time</th><th>Venue</th><th>Price</th><th>Status</th><th>Actions</th></tr></thead>
+
+            <!-- Table header -->
+            <thead>
+            <tr>
+                <th>Title</th>
+                <th>Category</th>
+                <th>Date</th>
+                <th>Time</th>
+                <th>Venue</th>
+                <th>Price</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+
             <tbody>
-                <tr th:each="e : ${events}"
-                    th:attr="data-cat=${e.category},data-status=${e.status}">
-                    <td th:text="${e.title}"></td>
-                    <td><span class="badge badge-scheduled" th:text="${e.category}"></span></td>
-                    <td th:text="${e.date}"></td>
-                    <td th:text="${e.time}"></td>
-                    <td>
-                        <span th:each="v : ${venues}" th:if="${v.id == e.venueId}" th:text="${v.name}"></span>
-                    </td>
-                    <td th:text="'Rs. ' + ${e.basePrice}"></td>
-                    <td>
-                        <span class="badge"
-                              th:classappend="${e.status != null ? 'badge-' + e.status : 'badge-scheduled'}"
-                              th:text="${e.status}"></span>
-                    </td>
-                    <td class="actions" th:unless="${session.adminRole == 'support'}">
-                        <a class="btn btn-sm btn-secondary" th:href="@{'/events/' + ${e.id} + '/edit'}">Edit</a>
-                        <form th:action="@{'/events/' + ${e.id} + '/delete'}" method="post" style="display:inline;">
-                            <button class="btn btn-sm btn-danger" onclick="return confirm('Delete this event?')">Delete</button>
-                        </form>
-                    </td>
-                    <td th:if="${session.adminRole == 'support'}" class="actions"><span style="color:#94a3b8;">View only</span></td>
-                </tr>
+
+            <!-- Loop through each event -->
+            <tr th:each="e : ${events}"
+                th:attr="data-cat=${e.category},data-status=${e.status}">
+
+                <!-- Event title -->
+                <td th:text="${e.title}"></td>
+
+                <!-- Event category -->
+                <td>
+                    <span class="badge badge-scheduled" th:text="${e.category}"></span>
+                </td>
+
+                <!-- Event date -->
+                <td th:text="${e.date}"></td>
+
+                <!-- Event time -->
+                <td th:text="${e.time}"></td>
+
+                <!-- Display venue name by matching venueId -->
+                <td>
+                    <span th:each="v : ${venues}"
+                          th:if="${v.id == e.venueId}"
+                          th:text="${v.name}">
+                    </span>
+                </td>
+
+                <!-- Event price -->
+                <td th:text="'Rs. ' + ${e.basePrice}"></td>
+
+                <!-- Event status with dynamic styling -->
+                <td>
+                    <span class="badge"
+                          th:classappend="${e.status != null ? 'badge-' + e.status : 'badge-scheduled'}"
+                          th:text="${e.status}">
+                    </span>
+                </td>
+
+                <!-- Actions (Edit/Delete) for normal admins -->
+                <td class="actions" th:unless="${session.adminRole == 'support'}">
+
+                    <!-- Edit button -->
+                    <a class="btn btn-sm btn-secondary"
+                       th:href="@{'/events/' + ${e.id} + '/edit'}">
+                        Edit
+                    </a>
+
+                    <!-- Delete form -->
+                    <form th:action="@{'/events/' + ${e.id} + '/delete'}"
+                          method="post"
+                          style="display:inline;">
+                        <button class="btn btn-sm btn-danger"
+                                onclick="return confirm('Delete this event?')">
+                            Delete
+                        </button>
+                    </form>
+                </td>
+
+                <!-- If support role → only view -->
+                <td th:if="${session.adminRole == 'support'}" class="actions">
+                    <span style="color:#94a3b8;">View only</span>
+                </td>
+
+            </tr>
             </tbody>
         </table>
-        <div id="noResults" class="card empty" style="display:none;">No events match your search.</div>
-        <div th:if="${events.isEmpty()}" class="card empty">No events yet.</div>
+
+        <!-- Show if no search results -->
+        <div id="noResults" class="card empty" style="display:none;">
+            No events match your search.
+        </div>
+
+        <!-- Show if no events exist -->
+        <div th:if="${events.isEmpty()}" class="card empty">
+            No events yet.
+        </div>
+
     </main>
 </div>
+
+<!-- JavaScript for search + filter -->
 <script>
-function filterTable() {
-    var q = document.getElementById('searchInput').value.toLowerCase();
-    var cat = document.getElementById('catFilter').value;
-    var status = document.getElementById('statusFilter').value;
-    var rows = document.querySelectorAll('#dataTable tbody tr');
-    var visible = 0;
-    rows.forEach(function(row) {
-        var text = row.textContent.toLowerCase();
-        var matchQ = !q || text.includes(q);
-        var matchCat = !cat || row.dataset.cat === cat;
-        var matchStatus = !status || row.dataset.status === status;
-        var show = matchQ && matchCat && matchStatus;
-        row.style.display = show ? '' : 'none';
-        if (show) visible++;
-    });
-    document.getElementById('noResults').style.display = (visible === 0) ? '' : 'none';
-}
+
+    function filterTable() {
+
+        // Get search input value
+        var q = document.getElementById('searchInput').value.toLowerCase();
+
+        // Get selected category
+        var cat = document.getElementById('catFilter').value;
+
+        // Get selected status
+        var status = document.getElementById('statusFilter').value;
+
+        // Get all table rows
+        var rows = document.querySelectorAll('#dataTable tbody tr');
+
+        var visible = 0;
+
+        rows.forEach(function(row) {
+
+            // Get text content of row
+            var text = row.textContent.toLowerCase();
+
+            // Check search match
+            var matchQ = !q || text.includes(q);
+
+            // Check category match
+            var matchCat = !cat || row.dataset.cat === cat;
+
+            // Check status match
+            var matchStatus = !status || row.dataset.status === status;
+
+            // Show row only if all conditions match
+            var show = matchQ && matchCat && matchStatus;
+
+            row.style.display = show ? '' : 'none';
+
+            if (show) visible++;
+        });
+
+        // Show "no results" message if no rows visible
+        document.getElementById('noResults').style.display = (visible === 0) ? '' : 'none';
+    }
+
 </script>
+
 </body>
 </html>

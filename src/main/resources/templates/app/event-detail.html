@@ -1,44 +1,92 @@
 <!DOCTYPE html>
+<!-- HTML5 document -->
+
 <html xmlns:th="http://www.thymeleaf.org">
+<!-- Enable Thymeleaf template engine -->
+
 <head>
     <meta charset="UTF-8"/>
+
+    <!-- Dynamic title using event name -->
     <title th:text="${event.title} + ' | TixCore'">Event</title>
+
+    <!-- Link CSS file -->
     <link rel="stylesheet" th:href="@{/css/style.css}"/>
 </head>
-<body class="app-body">
-<div th:replace="~{fragments/layout :: usernav('home')}"></div>
-<main class="app-main">
-    <a th:href="@{/app/home}" class="back-link">&larr; Back to events</a>
 
+<body class="app-body">
+
+<!-- Navigation bar -->
+<div th:replace="~{fragments/layout :: usernav('home')}"></div>
+
+<main class="app-main">
+
+    <!-- Back navigation to event list -->
+    <a th:href="@{/app/home}" class="back-link">← Back to events</a>
+
+    <!-- ================= EVENT DETAILS ================= -->
     <div class="event-detail">
+
+        <!-- Event category banner (used for styling) -->
         <div class="event-detail-banner" th:attr="data-cat=${event.category}">
             <span th:text="${event.category}"></span>
         </div>
+
         <div class="event-detail-body">
+
+            <!-- Event title -->
             <h1 th:text="${event.title}"></h1>
+
+            <!-- Event information -->
             <div class="event-meta-row">
-                <span><strong>Date:</strong> <span th:text="${event.date}"></span></span>
-                <span><strong>Time:</strong> <span th:text="${event.time}"></span></span>
-                <span><strong>Venue:</strong> <span th:text="${venue != null ? venue.name : 'TBA'}"></span></span>
-                <span class="event-price-big" th:text="'Rs. ' + ${event.basePrice} + ' / seat'"></span>
+
+                <span>
+                    <strong>Date:</strong>
+                    <span th:text="${event.date}"></span>
+                </span>
+
+                <span>
+                    <strong>Time:</strong>
+                    <span th:text="${event.time}"></span>
+                </span>
+
+                <!-- Display venue name (if found) -->
+                <span>
+                    <strong>Venue:</strong>
+                    <span th:text="${venue != null ? venue.name : 'TBA'}"></span>
+                </span>
+
+                <!-- Display ticket price -->
+                <span class="event-price-big"
+                      th:text="'Rs. ' + ${event.basePrice} + ' / seat'"></span>
             </div>
+
+            <!-- Event description -->
             <p class="event-description" th:text="${event.description}"></p>
+
         </div>
     </div>
 
-    <!-- ============== Cinema seat selection ============== -->
-    <section class="cinema" th:attr="data-event-id=${event.id},data-base-price=${event.basePrice}">
+    <!-- ================= SEAT BOOKING SYSTEM ================= -->
+    <section class="cinema"
+             th:attr="data-event-id=${event.id},data-base-price=${event.basePrice}">
+        <!-- data-event-id → used by JS to identify event -->
+        <!-- data-base-price → used for price calculation -->
+
         <h2 class="cinema-title">Choose your seats</h2>
 
+        <!-- Screen UI representation -->
         <div class="screen">
             <div class="screen-bar"></div>
             <span class="screen-label">SCREEN</span>
         </div>
 
+        <!-- Seat grid loaded dynamically using JavaScript -->
         <div id="seatGrid" class="seat-grid">
             <div class="seat-loading">Loading seat map…</div>
         </div>
 
+        <!-- Seat legend -->
         <div class="seat-legend">
             <div><span class="seat-dot available"></span> Available</div>
             <div><span class="seat-dot selected"></span> Selected</div>
@@ -46,41 +94,99 @@
             <div><span class="seat-dot locked"></span> Held</div>
         </div>
 
+        <!-- ================= BOOKING SUMMARY ================= -->
         <div class="booking-summary">
+
+            <!-- Left side: seat details -->
             <div class="bs-left">
-                <div class="bs-row"><span>Selected seats:</span> <strong id="selectedSeatsLabel">None</strong></div>
-                <div class="bs-row"><span>Quantity:</span> <strong id="seatCount">0</strong></div>
-                <div class="bs-row total"><span>Total:</span> <strong id="totalPrice">Rs. 0</strong></div>
+
+                <!-- Selected seats -->
+                <div class="bs-row">
+                    <span>Selected seats:</span>
+                    <strong id="selectedSeatsLabel">None</strong>
+                </div>
+
+                <!-- Number of seats -->
+                <div class="bs-row">
+                    <span>Quantity:</span>
+                    <strong id="seatCount">0</strong>
+                </div>
+
+                <!-- Total price calculation -->
+                <div class="bs-row total">
+                    <span>Total:</span>
+                    <strong id="totalPrice">Rs. 0</strong>
+                </div>
             </div>
+
+            <!-- Right side: buttons & timer -->
             <div class="bs-right">
+
+                <!-- Timer shows how long seats are locked -->
                 <div id="timerBox" class="timer-box hidden">
                     <div class="timer-label">Seats held for</div>
                     <div id="timer" class="timer-value">05:00</div>
                 </div>
-                <button id="proceedBtn" class="btn btn-lg" disabled>Proceed</button>
-                <button id="confirmBtn" class="btn btn-lg btn-success hidden">Confirm Booking</button>
-                <button id="cancelLockBtn" class="btn btn-lg btn-secondary hidden">Cancel</button>
+
+                <!-- Booking process buttons -->
+                <button id="proceedBtn" class="btn btn-lg" disabled>
+                    Proceed
+                </button>
+
+                <button id="confirmBtn" class="btn btn-lg btn-success hidden">
+                    Confirm Booking
+                </button>
+
+                <button id="cancelLockBtn" class="btn btn-lg btn-secondary hidden">
+                    Cancel
+                </button>
+
             </div>
         </div>
 
+        <!-- Message display area (errors, info, success) -->
         <div id="cinemaMessage" class="cinema-message"></div>
+
     </section>
 
-    <!-- ============== Reviews ============== -->
+    <!-- ================= REVIEWS SECTION ================= -->
     <div class="card" style="margin-top:24px;">
+
+        <!-- Display number of reviews -->
         <h3>Reviews (<span th:text="${reviews.size()}">0</span>)</h3>
-        <div th:if="${reviews.isEmpty()}" class="empty" style="padding:20px;">Be the first to review.</div>
+
+        <!-- Show message if no reviews -->
+        <div th:if="${reviews.isEmpty()}" class="empty" style="padding:20px;">
+            Be the first to review.
+        </div>
+
+        <!-- Loop through reviews -->
         <div class="review-list">
             <div class="review-item" th:each="r : ${reviews}">
+
+                <!-- Review header (username + rating) -->
                 <div class="review-head">
                     <strong th:text="${userNames[r.userId]}">User</strong>
-                    <span class="stars" th:text="${'★'.repeat(r.rating) + '☆'.repeat(5 - r.rating)}">★★★★★</span>
+
+                    <!-- Dynamic star rating -->
+                    <span class="stars"
+                          th:text="${'★'.repeat(r.rating) + '☆'.repeat(5 - r.rating)}">
+                    </span>
                 </div>
+
+                <!-- Review comment -->
                 <p th:text="${r.comment}"></p>
+
             </div>
         </div>
+
+        <!-- Add review form -->
         <h4 style="margin-top:16px;">Leave a review</h4>
-        <form method="post" th:action="@{'/app/event/' + ${event.id} + '/review'}">
+
+        <form method="post"
+              th:action="@{'/app/event/' + ${event.id} + '/review'}">
+
+            <!-- Rating selection -->
             <div class="field">
                 <label>Rating</label>
                 <select name="rating">
@@ -91,223 +197,17 @@
                     <option value="1">1 - Bad</option>
                 </select>
             </div>
+
+            <!-- User comment -->
             <div class="field">
                 <label>Comment</label>
                 <textarea name="comment" required></textarea>
             </div>
+
+            <!-- Submit review -->
             <button class="btn" type="submit">Submit Review</button>
         </form>
+
     </div>
+
 </main>
-
-<script th:inline="javascript">
-(function () {
-    const cinema = document.querySelector('.cinema');
-    const eventId = cinema.dataset.eventId;
-    const basePrice = parseFloat(cinema.dataset.basePrice) || 0;
-    const grid = document.getElementById('seatGrid');
-    const selectedLabel = document.getElementById('selectedSeatsLabel');
-    const seatCount = document.getElementById('seatCount');
-    const totalPriceEl = document.getElementById('totalPrice');
-    const proceedBtn = document.getElementById('proceedBtn');
-    const confirmBtn = document.getElementById('confirmBtn');
-    const cancelLockBtn = document.getElementById('cancelLockBtn');
-    const timerBox = document.getElementById('timerBox');
-    const timerEl = document.getElementById('timer');
-    const messageEl = document.getElementById('cinemaMessage');
-
-    let seats = [];
-    let selected = new Set();
-    let lockedUntil = 0;
-    let timerInterval = null;
-
-    function showMessage(text, type) {
-        messageEl.textContent = text || '';
-        messageEl.className = 'cinema-message' + (type ? ' msg-' + type : '');
-    }
-
-    async function loadSeats() {
-        const res = await fetch('/api/events/' + eventId + '/seats');
-        const data = await res.json();
-        seats = data.seats;
-        renderGrid(data);
-        // Restore prior locks held by this user
-        const mine = seats.filter(s => s.status === 'MINE').map(s => s.id);
-        if (mine.length) {
-            mine.forEach(id => selected.add(id));
-            updateSummary();
-            // We don't know exact lockedUntil; require user to re-proceed
-        }
-    }
-
-    function renderGrid(data) {
-        grid.innerHTML = '';
-        const rowMap = {};
-        seats.forEach(s => {
-            if (!rowMap[s.row]) rowMap[s.row] = [];
-            rowMap[s.row].push(s);
-        });
-        const rowKeys = Object.keys(rowMap).sort();
-        rowKeys.forEach(row => {
-            const rowEl = document.createElement('div');
-            rowEl.className = 'seat-row';
-            const label1 = document.createElement('span');
-            label1.className = 'row-label';
-            label1.textContent = row;
-            rowEl.appendChild(label1);
-            rowMap[row].sort((a, b) => a.number - b.number).forEach(seat => {
-                const btn = document.createElement('button');
-                btn.type = 'button';
-                btn.className = 'seat ' + statusClass(seat);
-                btn.dataset.id = seat.id;
-                btn.dataset.code = seat.code;
-                btn.textContent = seat.number;
-                btn.title = seat.code;
-                if (seat.status === 'BOOKED' || (seat.status === 'LOCKED')) {
-                    btn.disabled = true;
-                }
-                if (seat.status === 'MINE') {
-                    btn.classList.add('selected');
-                    selected.add(seat.id);
-                }
-                btn.addEventListener('click', () => toggleSeat(seat.id, btn));
-                rowEl.appendChild(btn);
-            });
-            const label2 = document.createElement('span');
-            label2.className = 'row-label';
-            label2.textContent = row;
-            rowEl.appendChild(label2);
-            grid.appendChild(rowEl);
-        });
-        updateSummary();
-    }
-
-    function statusClass(seat) {
-        if (seat.status === 'BOOKED') return 'booked';
-        if (seat.status === 'LOCKED') return 'locked';
-        return 'available';
-    }
-
-    function toggleSeat(id, btn) {
-        if (lockedUntil && Date.now() < lockedUntil) {
-            showMessage('Seats are held. Cancel hold to change selection.', 'warn');
-            return;
-        }
-        if (selected.has(id)) {
-            selected.delete(id);
-            btn.classList.remove('selected');
-        } else {
-            if (selected.size >= 8) {
-                showMessage('Maximum 8 seats per booking.', 'warn');
-                return;
-            }
-            selected.add(id);
-            btn.classList.add('selected');
-        }
-        updateSummary();
-    }
-
-    function updateSummary() {
-        const codes = [...selected].map(id => {
-            const s = seats.find(x => x.id === id);
-            return s ? s.code : '';
-        }).filter(Boolean).sort();
-        selectedLabel.textContent = codes.length ? codes.join(', ') : 'None';
-        seatCount.textContent = codes.length;
-        totalPriceEl.textContent = 'Rs. ' + (codes.length * basePrice).toFixed(2);
-        proceedBtn.disabled = codes.length === 0;
-    }
-
-    proceedBtn.addEventListener('click', async () => {
-        if (selected.size === 0) return;
-        proceedBtn.disabled = true;
-        const res = await fetch('/api/events/' + eventId + '/lock', {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({seatIds: [...selected]})
-        });
-        const data = await res.json();
-        if (!res.ok) {
-            showMessage(data.error || 'Could not hold seats.', 'error');
-            proceedBtn.disabled = false;
-            await loadSeats();
-            return;
-        }
-        lockedUntil = data.lockedUntil;
-        startTimer();
-        proceedBtn.classList.add('hidden');
-        confirmBtn.classList.remove('hidden');
-        cancelLockBtn.classList.remove('hidden');
-        timerBox.classList.remove('hidden');
-        showMessage('Seats held for 5 minutes. Confirm to complete booking.', 'info');
-        // Disable all other seat buttons
-        grid.querySelectorAll('.seat').forEach(b => {
-            if (!selected.has(b.dataset.id)) b.disabled = true;
-        });
-    });
-
-    confirmBtn.addEventListener('click', async () => {
-        confirmBtn.disabled = true;
-        const res = await fetch('/api/events/' + eventId + '/book', {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({seatIds: [...selected]})
-        });
-        const data = await res.json();
-        if (!res.ok) {
-            showMessage(data.error || 'Booking failed.', 'error');
-            confirmBtn.disabled = false;
-            return;
-        }
-        stopTimer();
-        showMessage('Booking confirmed! Redirecting…', 'success');
-        setTimeout(() => { window.location.href = data.redirect || '/app/my-bookings'; }, 800);
-    });
-
-    cancelLockBtn.addEventListener('click', async () => {
-        await fetch('/api/events/' + eventId + '/release', {method: 'POST'});
-        resetUI();
-        await loadSeats();
-        showMessage('Hold cancelled. You can pick again.', 'info');
-    });
-
-    function startTimer() {
-        if (timerInterval) clearInterval(timerInterval);
-        const tick = () => {
-            const remaining = Math.max(0, lockedUntil - Date.now());
-            const min = Math.floor(remaining / 60000);
-            const sec = Math.floor((remaining % 60000) / 1000);
-            timerEl.textContent = String(min).padStart(2,'0') + ':' + String(sec).padStart(2,'0');
-            if (remaining <= 0) {
-                stopTimer();
-                showMessage('Hold expired. Please re-select your seats.', 'error');
-                resetUI();
-                loadSeats();
-            }
-        };
-        tick();
-        timerInterval = setInterval(tick, 1000);
-    }
-
-    function stopTimer() {
-        if (timerInterval) clearInterval(timerInterval);
-        timerInterval = null;
-    }
-
-    function resetUI() {
-        selected.clear();
-        lockedUntil = 0;
-        timerBox.classList.add('hidden');
-        confirmBtn.classList.add('hidden');
-        confirmBtn.disabled = false;
-        cancelLockBtn.classList.add('hidden');
-        proceedBtn.classList.remove('hidden');
-        proceedBtn.disabled = true;
-        updateSummary();
-    }
-
-    loadSeats();
-})();
-</script>
-</body>
-</html>
