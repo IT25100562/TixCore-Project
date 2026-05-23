@@ -11,6 +11,8 @@ public class User extends Entity {
     private String fullName;
     private String phone;
     private String password;
+    // Stores the user's profile image path or filename
+    private String profileImage;
 
     //Default User constructor
     public User() {}
@@ -26,11 +28,15 @@ public class User extends Entity {
     public void setPhone(String v) { this.phone = v; }
     public String getPassword() { return password; }
     public void setPassword(String v) { this.password = v; }
+    public String getProfileImage() { return profileImage; }
+    public void setProfileImage(String v) { this.profileImage = v; }
 
     // Converts User object into CSV format for file storage
     @Override
     public String serialize() {
-        return CsvUtil.join(id, username, email, fullName, phone, createdAt, password);
+        return CsvUtil.join(id, username, email, fullName, phone, createdAt, password,
+                // Saves empty string if profile image is null
+                profileImage == null ? "" : profileImage);
     }
 
     // Converts CSV line back into a User object
@@ -52,6 +58,9 @@ public class User extends Entity {
         // Safety check to avoid ArrayIndexOutOfBoundsException
         u.createdAt = p.length > 5 ? CsvUtil.unescape(p[5]) : "";
         u.password = p.length > 6 ? CsvUtil.unescape(p[6]) : "";
+
+        // Safety check to restore profile image from CSV data
+        u.profileImage = p.length > 7 ? CsvUtil.unescape(p[7]) : "";
 
         return u;
     }
