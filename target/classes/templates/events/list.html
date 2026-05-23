@@ -6,33 +6,83 @@
     <div th:replace="~{fragments/layout :: sidebar('events')}"></div>
     <main class="main">
         <div class="page-header">
-            <h2>Events</h2>
-            <a class="btn" th:href="@{/events/new}">+ New Event</a>
+            <div><h2>Events</h2><p th:text="${events.size()} + ' events listed'"></p></div>
+            <a th:unless="${session.adminRole == 'support'}" class="btn" th:href="@{/events/new}">+ New Event</a>
         </div>
-        <table th:if="${!events.isEmpty()}">
+        <div class="list-toolbar">
+            <div class="search-wrap">
+                <span class="search-icon">&#9906;</span>
+                <input class="search-input" id="searchInput" type="text" placeholder="Search by title, venue…" oninput="filterTable()"/>
+            </div>
+            <div class="filter-wrap">
+                <select class="filter-select" id="catFilter" onchange="filterTable()">
+                    <option value="">All Categories</option>
+                    <option>Concert</option>
+                    <option>Conference</option>
+                    <option>Comedy</option>
+                    <option>Festival</option>
+                    <option>Networking</option>
+                    <option>Sports</option>
+                    <option>Theatre</option>
+                </select>
+                <select class="filter-select" id="statusFilter" onchange="filterTable()">
+                    <option value="">All Statuses</option>
+                    <option>scheduled</option>
+                    <option>completed</option>
+                    <option>cancelled</option>
+                </select>
+            </div>
+        </div>
+        <table id="dataTable" th:if="${!events.isEmpty()}">
             <thead><tr><th>Title</th><th>Category</th><th>Date</th><th>Time</th><th>Venue</th><th>Price</th><th>Status</th><th>Actions</th></tr></thead>
             <tbody>
-                <tr th:each="e : ${events}">
+                <tr th:each="e : ${events}"
+                    th:attr="data-cat=${e.category},data-status=${e.status}">
                     <td th:text="${e.title}"></td>
-                    <td th:text="${e.category}"></td>
+                    <td><span class="badge badge-scheduled" th:text="${e.category}"></span></td>
                     <td th:text="${e.date}"></td>
                     <td th:text="${e.time}"></td>
                     <td>
                         <span th:each="v : ${venues}" th:if="${v.id == e.venueId}" th:text="${v.name}"></span>
                     </td>
-                    <td th:text="'$' + ${e.basePrice}"></td>
-                    <td th:text="${e.status}"></td>
-                    <td class="actions">
+                    <td th:text="'Rs. ' + ${e.basePrice}"></td>
+                    <td>
+                        <span class="badge"
+                              th:classappend="${e.status != null ? 'badge-' + e.status : 'badge-scheduled'}"
+                              th:text="${e.status}"></span>
+                    </td>
+                    <td class="actions" th:unless="${session.adminRole == 'support'}">
                         <a class="btn btn-sm btn-secondary" th:href="@{'/events/' + ${e.id} + '/edit'}">Edit</a>
                         <form th:action="@{'/events/' + ${e.id} + '/delete'}" method="post" style="display:inline;">
                             <button class="btn btn-sm btn-danger" onclick="return confirm('Delete this event?')">Delete</button>
                         </form>
                     </td>
+                    <td th:if="${session.adminRole == 'support'}" class="actions"><span style="color:#94a3b8;">View only</span></td>
                 </tr>
             </tbody>
         </table>
+        <div id="noResults" class="card empty" style="display:none;">No events match your search.</div>
         <div th:if="${events.isEmpty()}" class="card empty">No events yet.</div>
     </main>
 </div>
+<script>
+function filterTable() {
+    var q = document.getElementById('searchInput').value.toLowerCase();
+    var cat = document.getElementById('catFilter').value;
+    var status = document.getElementById('statusFilter').value;
+    var rows = document.querySelectorAll('#dataTable tbody tr');
+    var visible = 0;
+    rows.forEach(function(row) {
+        var text = row.textContent.toLowerCase();
+        var matchQ = !q || text.includes(q);
+        var matchCat = !cat || row.dataset.cat === cat;
+        var matchStatus = !status || row.dataset.status === status;
+        var show = matchQ && matchCat && matchStatus;
+        row.style.display = show ? '' : 'none';
+        if (show) visible++;
+    });
+    document.getElementById('noResults').style.display = (visible === 0) ? '' : 'none';
+}
+</script>
 </body>
 </html>

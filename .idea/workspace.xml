@@ -5,6 +5,7 @@
   </component>
 
   <component name="ChangeListManager">
+<<<<<<< Updated upstream
     <list default="true"
           id="dd0fcd1e-3aa7-419b-bde8-628386f917f7"
           name="Changes"
@@ -17,6 +18,10 @@
               beforeDir="false"
               afterPath="$PROJECT_DIR$/src/main/java/com/ticketbooking/controller/HomeController.java"
               afterDir="false" />
+=======
+    <list default="true" id="dd0fcd1e-3aa7-419b-bde8-628386f917f7" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+>>>>>>> Stashed changes
     </list>
 
     <option name="SHOW_DIALOG" value="false" />
@@ -93,21 +98,31 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
+<<<<<<< Updated upstream
 
+=======
+>>>>>>> Stashed changes
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
     "ModuleVcsDetector.initialDetectionPerformed": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.git.unshallow": "true",
     "RunOnceActivity.typescript.service.memoryLimit.init": "true",
+<<<<<<< Updated upstream
     "git-widget-placeholder": "dulith's-branch",
     "kotlin-language-version-configured": "true",
     "last_opened_file_path": "/Users/menushikaherath/ver2/TixCore-Project/src/main/java/com/ticketbooking/repository",
+=======
+    "Spring Boot.TicketBookingApplication.executor": "Run",
+    "git-widget-placeholder": "dulith's-branch",
+    "kotlin-language-version-configured": "true",
+>>>>>>> Stashed changes
     "nodejs_package_manager_path": "npm",
     "settings.editor.selected.configurable": "editor.preferences.completion",
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
+<<<<<<< Updated upstream
 
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
@@ -117,6 +132,8 @@
     </key>
   </component>
 
+=======
+>>>>>>> Stashed changes
   <component name="RunManager">
     <configuration name="TicketBookingApplication"
                    type="SpringBootApplicationConfigurationType"
@@ -150,6 +167,7 @@
       <updated>1778821519324</updated>
       <workItem from="1778821531533" duration="2068000" />
       <workItem from="1779516751742" duration="5000" />
+      <workItem from="1779516782490" duration="791000" />
     </task>
     <servers />
   </component>
