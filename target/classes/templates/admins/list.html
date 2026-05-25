@@ -1,31 +1,63 @@
 <!DOCTYPE html>
+<!-- Root HTML tag with Thymeleaf namespace -->
 <html xmlns:th="http://www.thymeleaf.org">
-<head><meta charset="UTF-8"/><title>Admins | TixCore</title><link rel="stylesheet" th:href="@{/css/style.css}"/></head>
+<head>
+    <!-- Character encoding -->
+    <meta charset="UTF-8"/>
+    <!-- Browser tab title -->
+    <title>Admins | TixCore</title>
+    <!-- Link external CSS file --> 
+    <link rel="stylesheet" th:href="@{/css/style.css}"/>
+</head>
 <body>
+<!-- Main page layout container -->    
 <div class="layout">
+    <!-- Import sidebar fragment and highlight 'admins' menu -->
     <div th:replace="~{fragments/layout :: sidebar('admins')}"></div>
+    <!-- Main content section -->
     <main class="main">
+         <!-- Page header section -->
         <div class="page-header">
+             <!-- Page title -->
             <h2>Admins</h2>
+            <!-- Button to navigate to new admin form -->
             <a class="btn" th:href="@{/admins/new}">+ New Admin</a>
         </div>
+        <!-- Show table only if admin list is NOT empty -->
         <table th:if="${!admins.isEmpty()}">
-            <thead><tr><th>Username</th><th>Full Name</th><th>Email</th><th>Role</th><th>Actions</th></tr></thead>
+            <!-- Table headings -->
+            <thead><tr><th>Username</th>
+                <th>Full Name</th>
+                <th>Email</th><th>Role</th>
+                <th>Actions</th></tr>
+            </thead>
+            <!-- Table body -->
             <tbody>
+            <tbody>
+                <!-- Loop through each admin object -->
                 <tr th:each="a : ${admins}">
+                     <!-- Display admin username -->
                     <td th:text="${a.username}"></td>
+                    <!-- Display admin full name -->
                     <td th:text="${a.fullName}"></td>
+                    <!-- Display admin email -->
                     <td th:text="${a.email}"></td>
+                    <!-- Display admin role -->
                     <td th:text="${a.role}"></td>
+                    <!-- Action buttons section -->
                     <td class="actions">
+                        <!-- Edit admin button -->
                         <a class="btn btn-sm btn-secondary" th:href="@{'/admins/' + ${a.id} + '/edit'}">Edit</a>
+                        <!-- Delete admin form -->
                         <form th:action="@{'/admins/' + ${a.id} + '/delete'}" method="post" style="display:inline;">
+                            <!-- Delete button with confirmation popup -->
                             <button class="btn btn-sm btn-danger" onclick="return confirm('Delete this admin?')">Delete</button>
                         </form>
                     </td>
                 </tr>
             </tbody>
         </table>
+        <!-- Show message if no admins exist -->
         <div th:if="${admins.isEmpty()}" class="card empty">No admins yet.</div>
     </main>
 </div>
