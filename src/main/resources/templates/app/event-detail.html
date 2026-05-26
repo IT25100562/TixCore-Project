@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<!-- HTML5 document -->
+
 
 <html xmlns:th="http://www.thymeleaf.org">
-<!-- Enable Thymeleaf template engine -->
+
 
 <head>
     <meta charset="UTF-8"/>
@@ -24,7 +24,7 @@
     <!-- Back navigation to event list -->
     <a th:href="@{/app/home}" class="back-link">← Back to events</a>
 
-    <!-- ================= EVENT DETAILS ================= -->
+   
     <div class="event-detail">
 
         <!-- Event category banner (used for styling) -->
@@ -67,7 +67,7 @@
         </div>
     </div>
 
-    <!-- ================= SEAT BOOKING SYSTEM ================= -->
+   
     <section class="cinema"
              th:attr="data-event-id=${event.id},data-base-price=${event.basePrice}">
         <!-- data-event-id → used by JS to identify event -->
@@ -75,7 +75,6 @@
 
         <h2 class="cinema-title">Choose your seats</h2>
 
-        <!-- Screen UI representation -->
         <div class="screen">
             <div class="screen-bar"></div>
             <span class="screen-label">SCREEN</span>
@@ -93,8 +92,7 @@
             <div><span class="seat-dot booked"></span> Booked</div>
             <div><span class="seat-dot locked"></span> Held</div>
         </div>
-
-        <!-- ================= BOOKING SUMMARY ================= -->
+        
         <div class="booking-summary">
 
             <!-- Left side: seat details -->
@@ -122,7 +120,7 @@
             <!-- Right side: buttons & timer -->
             <div class="bs-right">
 
-                <!-- Timer shows how long seats are locked -->
+
                 <div id="timerBox" class="timer-box hidden">
                     <div class="timer-label">Seats held for</div>
                     <div id="timer" class="timer-value">05:00</div>
@@ -144,18 +142,15 @@
             </div>
         </div>
 
-        <!-- Message display area (errors, info, success) -->
         <div id="cinemaMessage" class="cinema-message"></div>
 
     </section>
 
-    <!-- ================= REVIEWS SECTION ================= -->
+ 
     <div class="card" style="margin-top:24px;">
 
-        <!-- Display number of reviews -->
         <h3>Reviews (<span th:text="${reviews.size()}">0</span>)</h3>
 
-        <!-- Show message if no reviews -->
         <div th:if="${reviews.isEmpty()}" class="empty" style="padding:20px;">
             Be the first to review.
         </div>
@@ -168,7 +163,7 @@
                 <div class="review-head">
                     <strong th:text="${userNames[r.userId]}">User</strong>
 
-                    <!-- Dynamic star rating -->
+                   
                     <span class="stars"
                           th:text="${'★'.repeat(r.rating) + '☆'.repeat(5 - r.rating)}">
                     </span>
@@ -211,3 +206,203 @@
     </div>
 
 </main>
+
+<script>
+(function () {
+
+    const cinemaEl      = document.querySelector('.cinema');
+    const eventId       = cinemaEl.dataset.eventId;
+    const basePrice     = parseFloat(cinemaEl.dataset.basePrice) || 0;
+    const gridEl        = document.getElementById('seatGrid');
+    const msgEl         = document.getElementById('cinemaMessage');
+    const proceedBtn    = document.getElementById('proceedBtn');
+    const confirmBtn    = document.getElementById('confirmBtn');
+    const cancelBtn     = document.getElementById('cancelLockBtn');
+    const timerBox      = document.getElementById('timerBox');
+    const timerEl       = document.getElementById('timer');
+    const seatsLabel    = document.getElementById('selectedSeatsLabel');
+    const countLabel    = document.getElementById('seatCount');
+    const priceLabel    = document.getElementById('totalPrice');
+
+    let selectedIds   = [];   // seat ids the user has clicked
+    let lockedUntilMs = 0;
+    let timerInterval = null;
+
+    function showMsg(text, type) {   // type: info | warn | error | success
+        msgEl.className = 'cinema-message msg-' + type;
+        msgEl.textContent = text;
+    }
+    function clearMsg() { msgEl.className = 'cinema-message'; msgEl.textContent = ''; }
+
+    function updateSummary() {
+        const n = selectedIds.length;
+        countLabel.textContent  = n;
+        priceLabel.textContent  = 'Rs. ' + (basePrice * n).toLocaleString();
+        seatsLabel.textContent  = n === 0 ? 'None'
+            : Array.from(gridEl.querySelectorAll('.seat.selected'))
+                   .map(b => b.dataset.code).join(', ');
+        proceedBtn.disabled = n === 0;
+    }
+
+  
+    function loadSeats() {
+        fetch('/api/events/' + eventId + '/seats')
+            .then(r => r.json())
+            .then(data => renderGrid(data.seats))
+            .catch(() => showMsg('Could not load seats. Please refresh.', 'error'));
+    }
+
+    function renderGrid(seats) {
+        gridEl.innerHTML = '';
+        // Group by row label
+        const rows = {};
+        seats.forEach(s => { (rows[s.row] = rows[s.row] || []).push(s); });
+
+        Object.keys(rows).sort().forEach(rowLabel => {
+            const rowDiv = document.createElement('div');
+            rowDiv.className = 'seat-row';
+
+            // Row letter label
+            const lbl = document.createElement('span');
+            lbl.style.cssText = 'width:24px;text-align:center;font-weight:800;color:#94a3b8;font-size:13px;';
+            lbl.textContent = rowLabel;
+            rowDiv.appendChild(lbl);
+
+            rows[rowLabel].forEach(s => {
+                const btn = document.createElement('button');
+                btn.className  = 'seat ' + statusClass(s.status);
+                btn.textContent = s.number;
+                btn.dataset.id   = s.id;
+                btn.dataset.code = s.code;
+                btn.disabled = ['BOOKED', 'LOCKED'].includes(s.status);
+
+                // Re-select seats that were already locked by this user
+                if (s.status === 'MINE') {
+                    btn.className = 'seat selected';
+                    btn.disabled  = false;
+                    if (!selectedIds.includes(s.id)) selectedIds.push(s.id);
+                }
+
+                btn.addEventListener('click', () => toggleSeat(btn, s.id));
+                rowDiv.appendChild(btn);
+            });
+            gridEl.appendChild(rowDiv);
+        });
+        updateSummary();
+    }
+
+    function statusClass(st) {
+        if (st === 'AVAILABLE') return 'available';
+        if (st === 'BOOKED')    return 'booked';
+        if (st === 'LOCKED')    return 'locked';
+        if (st === 'MINE')      return 'selected';
+        return 'available';
+    }
+
+    // ── Toggle seat selection ──────────────────────────────────────
+    function toggleSeat(btn, id) {
+        if (lockedUntilMs > Date.now()) return; // seats are locked, no changes
+        if (btn.classList.contains('selected')) {
+            btn.classList.replace('selected', 'available');
+            selectedIds = selectedIds.filter(x => x !== id);
+        } else {
+            btn.classList.replace('available', 'selected');
+            selectedIds.push(id);
+        }
+        clearMsg();
+        updateSummary();
+    }
+
+    proceedBtn.addEventListener('click', () => {
+        if (!selectedIds.length) return;
+        proceedBtn.disabled = true;
+        fetch('/api/events/' + eventId + '/lock', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({seatIds: selectedIds})
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (data.error) {
+                showMsg(data.error, 'error');
+                proceedBtn.disabled = false;
+                loadSeats();
+                return;
+            }
+            lockedUntilMs = data.lockedUntil;
+            startTimer(data.expiresInSec);
+            proceedBtn.classList.add('hidden');
+            confirmBtn.classList.remove('hidden');
+            cancelBtn.classList.remove('hidden');
+            timerBox.classList.remove('hidden');
+            // Disable unselected available seats while locked
+            gridEl.querySelectorAll('.seat.available').forEach(b => b.disabled = true);
+            showMsg('Seats held for 5 minutes. Confirm your booking!', 'info');
+        })
+        .catch(() => { showMsg('Lock request failed. Try again.', 'error'); proceedBtn.disabled = false; });
+    });
+
+    // ── Confirm booking ────────────────────────────────────────────
+    confirmBtn.addEventListener('click', () => {
+        confirmBtn.disabled = true;
+        fetch('/api/events/' + eventId + '/book', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({seatIds: selectedIds})
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (data.error) {
+                showMsg(data.error, 'error');
+                resetLockUI();
+                loadSeats();
+                return;
+            }
+            clearInterval(timerInterval);
+            showMsg('Booking confirmed! Seats: ' + data.seats + ' — redirecting…', 'success');
+            setTimeout(() => window.location.href = data.redirect, 1800);
+        })
+        .catch(() => { showMsg('Booking failed. Try again.', 'error'); confirmBtn.disabled = false; });
+    });
+
+    cancelBtn.addEventListener('click', () => {
+        fetch('/api/events/' + eventId + '/release', {method: 'POST'})
+            .finally(() => { resetLockUI(); loadSeats(); clearMsg(); });
+    });
+
+    function startTimer(seconds) {
+        clearInterval(timerInterval);
+        let remaining = seconds;
+        updateTimerDisplay(remaining);
+        timerInterval = setInterval(() => {
+            remaining--;
+            updateTimerDisplay(remaining);
+            if (remaining <= 0) {
+                clearInterval(timerInterval);
+                showMsg('Your seat hold expired. Please re-select.', 'warn');
+                resetLockUI();
+                loadSeats();
+            }
+        }, 1000);
+    }
+
+    function updateTimerDisplay(s) {
+        const m = Math.floor(Math.max(s, 0) / 60);
+        const sec = Math.max(s, 0) % 60;
+        timerEl.textContent = String(m).padStart(2,'0') + ':' + String(sec).padStart(2,'0');
+    }
+
+    function resetLockUI() {
+        lockedUntilMs = 0;
+        selectedIds   = [];
+        clearInterval(timerInterval);
+        proceedBtn.classList.remove('hidden');
+        proceedBtn.disabled = true;
+        confirmBtn.classList.add('hidden');
+        cancelBtn.classList.add('hidden');
+        timerBox.classList.add('hidden');
+    }
+
+    loadSeats();
+})();
+</script>
