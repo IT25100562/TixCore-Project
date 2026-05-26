@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>My Profile | TixCore</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}"/>
+</head>
+<body class="app-body">
+<div th:replace="~{fragments/layout :: usernav('profile')}"></div>
+<main class="app-main">
+    <div class="page-header"><h2>My Profile</h2></div>
+
+    <div class="profile-grid">
+        <!-- Profile card -->
+        <div class="profile-card">
+            <div class="profile-head">
+                <div class="profile-avatar-wrap">
+                    <div id="profileAvatar" class="profile-avatar"
+                         th:attr="data-initial=${#strings.substring(fullName,0,1)}"
+                         th:text="${profileImage == null or profileImage.isEmpty() ? #strings.substring(fullName,0,1) : ''}"
+                         th:style="${profileImage != null and !profileImage.isEmpty()} ? 'background-image:url(' + ${profileImage} + ');background-size:cover;background-position:center;color:transparent;'">U</div>
+                    <div th:if="${!isAdmin}" class="avatar-actions">
+                        <label for="imgInput" class="btn btn-sm">Upload</label>
+                        <button type="button" id="removeImgBtn" class="btn btn-sm btn-secondary"
+                                th:classappend="${profileImage == null or profileImage.isEmpty()} ? 'hidden'">Remove</button>
+                        <input type="file" id="imgInput" accept="image/jpeg,image/png" hidden/>
+                    </div>
+                </div>
+                <div>
+                    <h3 id="profileName" th:text="${fullName}">Full Name</h3>
+                    <p class="profile-sub">@<span th:text="${username}"></span> &middot;
+                        <span class="role-tag" th:classappend="${isAdmin} ? 'role-admin' : 'role-user'" th:text="${role}"></span>
+                    </p>
+                    <small class="field-help" th:if="${!isAdmin}">JPG or PNG, max 2MB.</small>
+                </div>
+            </div>
+
+            <div id="uploadMsg" class="profile-msg"></div>
+
+            <form id="profileForm" class="profile-form">
+                <div class="field">
+                    <label>Full Name</label>
+                    <input type="text" id="fullName" th:value="${fullName}" disabled required minlength="3" pattern="[A-Za-z ]+"/>
+                    <small class="field-help">At least 3 letters, no special characters.</small>
+                </div>
+                <div class="field">
+                    <label>Email <span class="lock-tag">read-only</span></label>
+                    <input type="email" id="email" th:value="${email}" disabled readonly/>
+                </div>
+                <div class="field" th:if="${!isAdmin}">
+                    <label>Phone</label>
+                    <input type="tel" id="phone" th:value="${phone}" disabled inputmode="numeric" pattern="[0-9]{10}" maxlength="10"/>
+                    <small class="field-help">Exactly 10 digits.</small>
+                </div>
+                <div id="profileMsg" class="profile-msg"></div>
+                <div class="profile-actions">
+                    <button type="button" id="editBtn" class="btn">Edit Profile</button>
+                    <button type="submit" id="saveBtn" class="btn btn-success hidden" disabled>Save Changes</button>
+                    <button type="button" id="cancelBtn" class="btn btn-secondary hidden">Cancel</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Password card -->
+        <div class="profile-card">
+            <h3>Change Password</h3>
+            <p class="profile-sub">Update your account password securely.</p>
+            <form id="passwordForm" class="profile-form" autocomplete="off">
+                <div class="field">
+                    <label>Current Password</label>
+                    <input type="password" id="currentPassword" required/>
+                </div>
+                <div class="field">
+                    <label>New Password</label>
+                    <input type="password" id="newPassword" required minlength="6"/>
+                    <small class="field-help">Minimum 6 characters.</small>
+                </div>
+                <div class="field">
+                    <label>Confirm New Password</label>
+                    <input type="password" id="confirmPassword" required minlength="6"/>
+                </div>
+                <div id="passwordMsg" class="profile-msg"></div>
+                <div class="profile-actions">
+                    <button type="submit" class="btn">Update Password</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</main>
+
+<script>
+(function () {
+    const $ = id => document.getElementById(id);
+    const initial = {
+        fullName: $('fullName').value,
+        phone: ($('phone') && $('phone').value) || ''
+    };
+
+    function showMsg(el, text, type) {
+        el.textContent = text || '';
+        el.className = 'profile-msg' + (type ? ' msg-' + type : '');
+    }
+
+    function setEditMode(on) {
+        $('fullName').disabled = !on;
+        if ($('phone')) $('phone').disabled = !on;
+        $('editBtn').classList.toggle('hidden', on);
+        $('saveBtn').classList.toggle('hidden', !on);
+        $('cancelBtn').classList.toggle('hidden', !on);
+        $('saveBtn').disabled = true;
+    }
+
+    function isDirty() {
+        const phoneEl = $('phone');
+        return $('fullName').value !== initial.fullName
+            || (phoneEl && phoneEl.value !== initial.phone);
+    }
+
+    $('editBtn').addEventListener('click', () => setEditMode(true));
+    $('cancelBtn').addEventListener('click', () => {
+        $('fullName').value = initial.fullName;
+        if ($('phone')) $('phone').value = initial.phone;
+        showMsg($('profileMsg'), '', null);
+        setEditMode(false);
+    });
+    ['fullName','phone'].forEach(id => {
+        const el = $(id);
+        if (el) el.addEventListener('input', () => { $('saveBtn').disabled = !isDirty(); });
+    });
+
+    $('profileForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const fullName = $('fullName').value.trim();
+        const phone = $('phone') ? $('phone').value.trim() : '';
+        if (fullName.length < 3 || !/^[A-Za-z ]+$/.test(fullName)) {
+            showMsg($('profileMsg'), 'Name must be at least 3 letters (letters/spaces only).', 'error');
+            return;
+        }
+        if ($('phone') && !/^[0-9]{10}$/.test(phone)) {
+            showMsg($('profileMsg'), 'Phone must be exactly 10 digits.', 'error');
+            return;
+        }
+        $('saveBtn').disabled = true;
+        showMsg($('profileMsg'), 'Saving…', 'info');
+        const res = await fetch('/api/users/profile', {
+            method: 'PUT',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({fullName, phone})
+        });
+        const data = await res.json();
+        if (!res.ok) {
+            showMsg($('profileMsg'), data.error || 'Update failed.', 'error');
+            $('saveBtn').disabled = false;
+            return;
+        }
+        initial.fullName = fullName;
+        initial.phone = phone;
+        showMsg($('profileMsg'), 'Profile updated successfully.', 'success');
+        setEditMode(false);
+        const greet = document.querySelector('.user-nav-right .hello strong');
+        if (greet) greet.textContent = fullName;
+        $('profileName').textContent = fullName;
+        const av = $('profileAvatar');
+        if (!av.style.backgroundImage) av.textContent = fullName.charAt(0).toUpperCase();
+    });
+
+    $('passwordForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const currentPassword = $('currentPassword').value;
+        const newPassword = $('newPassword').value;
+        const confirmPassword = $('confirmPassword').value;
+        if (newPassword.length < 6) {
+            showMsg($('passwordMsg'), 'New password must be at least 6 characters.', 'error');
+            return;
+        }
+        if (newPassword !== confirmPassword) {
+            showMsg($('passwordMsg'), 'Passwords do not match.', 'error');
+            return;
+        }
+        showMsg($('passwordMsg'), 'Updating…', 'info');
+        const res = await fetch('/api/users/password', {
+            method: 'PUT',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({currentPassword, newPassword, confirmPassword})
+        });
+        const data = await res.json();
+        if (!res.ok) {
+            showMsg($('passwordMsg'), data.error || 'Update failed.', 'error');
+            return;
+        }
+        $('passwordForm').reset();
+        showMsg($('passwordMsg'), 'Password updated successfully.', 'success');
+    });
+
+    // Profile picture upload
+    const imgInput = $('imgInput');
+    const removeBtn = $('removeImgBtn');
+    if (imgInput) {
+        imgInput.addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            if (!/^image\/(jpeg|png|jpg)$/i.test(file.type)) {
+                showMsg($('uploadMsg'), 'Only JPG or PNG images allowed.', 'error');
+                return;
+            }
+            if (file.size > 2 * 1024 * 1024) {
+                showMsg($('uploadMsg'), 'Image must be 2MB or smaller.', 'error');
+                return;
+            }
+            // Preview immediately
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+                const av = $('profileAvatar');
+                av.style.backgroundImage = 'url(' + ev.target.result + ')';
+                av.style.backgroundSize = 'cover';
+                av.style.backgroundPosition = 'center';
+                av.style.color = 'transparent';
+            };
+            reader.readAsDataURL(file);
+
+            const formData = new FormData();
+            formData.append('file', file);
+            showMsg($('uploadMsg'), 'Uploading…', 'info');
+            const res = await fetch('/api/users/profile-picture', {method: 'POST', body: formData});
+            const data = await res.json();
+            if (!res.ok) {
+                showMsg($('uploadMsg'), data.error || 'Upload failed.', 'error');
+                return;
+            }
+            showMsg($('uploadMsg'), 'Profile picture updated.', 'success');
+            removeBtn.classList.remove('hidden');
+            // Persist final URL
+            const av = $('profileAvatar');
+            av.style.backgroundImage = 'url(' + data.url + ')';
+        });
+        removeBtn.addEventListener('click', async () => {
+            if (!confirm('Remove your profile picture?')) return;
+            const res = await fetch('/api/users/profile-picture', {method: 'DELETE'});
+            const data = await res.json();
+            if (!res.ok) {
+                showMsg($('uploadMsg'), data.error || 'Failed.', 'error');
+                return;
+            }
+            const av = $('profileAvatar');
+            av.style.backgroundImage = '';
+            av.style.color = '';
+            av.textContent = $('fullName').value.charAt(0).toUpperCase();
+            removeBtn.classList.add('hidden');
+            imgInput.value = '';
+            showMsg($('uploadMsg'), 'Profile picture removed.', 'success');
+        });
+    }
+})();
+</script>
+</body>
+</html>

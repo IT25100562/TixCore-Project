@@ -6,28 +6,66 @@
     <div th:replace="~{fragments/layout :: sidebar('reviews')}"></div>
     <main class="main">
         <div class="page-header">
-            <h2>Reviews</h2>
-            <a class="btn" th:href="@{/reviews/new}">+ New Review</a>
+            <div><h2>Reviews</h2><p th:text="${reviews.size()} + ' reviews submitted'"></p></div>
+            <a th:unless="${session.adminRole == 'support'}" class="btn" th:href="@{/reviews/new}">+ New Review</a>
         </div>
-        <table th:if="${!reviews.isEmpty()}">
-            <thead><tr><th>User</th><th>Event</th><th>Rating</th><th>Comment</th><th>Actions</th></tr></thead>
+        <div class="list-toolbar">
+            <div class="search-wrap">
+                <span class="search-icon">&#9906;</span>
+                <input class="search-input" id="searchInput" type="text" placeholder="Search by user, event or comment…" oninput="filterTable()"/>
+            </div>
+            <div class="filter-wrap">
+                <select class="filter-select" id="ratingFilter" onchange="filterTable()">
+                    <option value="">All Ratings</option>
+                    <option value="5">&#9733; 5 Stars</option>
+                    <option value="4">&#9733; 4 Stars</option>
+                    <option value="3">&#9733; 3 Stars</option>
+                    <option value="2">&#9733; 2 Stars</option>
+                    <option value="1">&#9733; 1 Star</option>
+                </select>
+            </div>
+        </div>
+        <table id="dataTable" th:if="${!reviews.isEmpty()}">
+            <thead><tr><th>User</th><th>Event</th><th>Rating</th><th>Comment</th><th>Date</th><th>Actions</th></tr></thead>
             <tbody>
-                <tr th:each="r : ${reviews}">
-                    <td><span th:each="u : ${users}" th:if="${u.id == r.userId}" th:text="${u.username}"></span></td>
+                <tr th:each="r : ${reviews}" th:attr="data-rating=${r.rating}">
+                    <td><span th:each="u : ${users}" th:if="${u.id == r.userId}" th:text="${u.fullName}"></span></td>
                     <td><span th:each="e : ${events}" th:if="${e.id == r.eventId}" th:text="${e.title}"></span></td>
-                    <td th:text="${r.rating} + ' / 5'"></td>
+                    <td>
+                        <span class="stars-display" th:text="${r.rating == 5 ? '★★★★★' : (r.rating == 4 ? '★★★★☆' : (r.rating == 3 ? '★★★☆☆' : (r.rating == 2 ? '★★☆☆☆' : '★☆☆☆☆')))}"></span>
+                    </td>
                     <td th:text="${r.comment}"></td>
-                    <td class="actions">
+                    <td th:text="${r.createdAt != null ? #strings.substring(r.createdAt,0,10) : ''}"></td>
+                    <td class="actions" th:unless="${session.adminRole == 'support'}">
                         <a class="btn btn-sm btn-secondary" th:href="@{'/reviews/' + ${r.id} + '/edit'}">Edit</a>
                         <form th:action="@{'/reviews/' + ${r.id} + '/delete'}" method="post" style="display:inline;">
                             <button class="btn btn-sm btn-danger" onclick="return confirm('Delete this review?')">Delete</button>
                         </form>
                     </td>
+                    <td th:if="${session.adminRole == 'support'}" class="actions"><span style="color:#94a3b8;">View only</span></td>
                 </tr>
             </tbody>
         </table>
+        <div id="noResults" class="card empty" style="display:none;">No reviews match your search.</div>
         <div th:if="${reviews.isEmpty()}" class="card empty">No reviews yet.</div>
     </main>
 </div>
+<script>
+function filterTable() {
+    var q = document.getElementById('searchInput').value.toLowerCase();
+    var rating = document.getElementById('ratingFilter').value;
+    var rows = document.querySelectorAll('#dataTable tbody tr');
+    var visible = 0;
+    rows.forEach(function(row) {
+        var text = row.textContent.toLowerCase();
+        var matchQ = !q || text.includes(q);
+        var matchRating = !rating || row.dataset.rating === rating;
+        var show = matchQ && matchRating;
+        row.style.display = show ? '' : 'none';
+        if (show) visible++;
+    });
+    document.getElementById('noResults').style.display = (visible === 0) ? '' : 'none';
+}
+</script>
 </body>
 </html>

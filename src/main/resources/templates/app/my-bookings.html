@@ -5,24 +5,34 @@
 <div th:replace="~{fragments/layout :: usernav('bookings')}"></div>
 <main class="app-main">
     <div class="page-header"><h2>My Bookings</h2></div>
-    <table th:if="${!bookings.isEmpty()}">
-        <thead><tr><th>Event</th><th>Seats</th><th>Total</th><th>Status</th><th>Booked On</th><th>Actions</th></tr></thead>
-        <tbody>
-            <tr th:each="b : ${bookings}">
-                <td th:text="${eventTitles[b.eventId]}"></td>
-                <td th:text="${b.seats}"></td>
-                <td th:text="'$' + ${b.totalPrice}"></td>
-                <td><span class="badge" th:classappend="'badge-' + ${b.status}" th:text="${b.status}"></span></td>
-                <td th:text="${#strings.substring(b.createdAt,0,10)}"></td>
-                <td>
+
+    <div class="booking-card-grid" th:if="${!bookings.isEmpty()}">
+        <div class="booking-card" th:each="b : ${bookings}">
+            <div class="bk-banner">
+                <span class="bk-cat">Ticket</span>
+                <span th:class="${'badge badge-' + b.status}" th:text="${b.status}">status</span>
+            </div>
+            <div class="bk-body">
+                <h3 th:text="${eventTitles[b.eventId] ?: 'Event'}">Event</h3>
+                <p class="bk-meta">
+                    <span><strong>Booking #</strong> <span th:text="${#strings.abbreviate(b.id, 10)}"></span></span>
+                </p>
+                <div class="bk-row"><span>Seats</span><strong th:text="${b.seats}"></strong></div>
+                <div class="bk-row"><span>Total</span><strong th:text="${'Rs. ' + b.totalPrice}"></strong></div>
+                <div class="bk-row"><span>Booked</span><strong th:text="${b.createdAt != null and b.createdAt.length() >= 10 ? #strings.substring(b.createdAt,0,10) : b.createdAt}"></strong></div>
+
+                <div class="bk-actions">
+                    <a th:href="@{'/api/bookings/' + ${b.id} + '/ticket'}" class="btn btn-sm">Download Ticket</a>
                     <form th:if="${b.status != 'cancelled'}" method="post" th:action="@{'/app/booking/' + ${b.id} + '/cancel'}" style="display:inline;">
                         <button class="btn btn-sm btn-danger" onclick="return confirm('Cancel this booking?')">Cancel</button>
                     </form>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <div th:if="${bookings.isEmpty()}" class="card empty">You have no bookings yet. <a th:href="@{/app/home}" style="color:#7c3aed;">Browse events</a>.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div th:if="${bookings.isEmpty()}" class="card empty">
+        You have no bookings yet. <a th:href="@{/app/home}" style="color:#7c3aed;">Browse events</a>.
+    </div>
 </main>
 </body>
 </html>

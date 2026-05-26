@@ -42,4 +42,3 @@ public class VenueController {
         return "redirect:/venues";
     }
 }
-

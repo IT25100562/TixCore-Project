@@ -6,28 +6,61 @@
     <div th:replace="~{fragments/layout :: sidebar('venues')}"></div>
     <main class="main">
         <div class="page-header">
-            <h2>Venues</h2>
-            <a class="btn" th:href="@{/venues/new}">+ New Venue</a>
+            <div><h2>Venues</h2><p th:text="${venues.size()} + ' venues available'"></p></div>
+            <a th:unless="${session.adminRole == 'support'}" class="btn" th:href="@{/venues/new}">+ New Venue</a>
         </div>
-        <table th:if="${!venues.isEmpty()}">
+        <div class="list-toolbar">
+            <div class="search-wrap">
+                <span class="search-icon">&#9906;</span>
+                <input class="search-input" id="searchInput" type="text" placeholder="Search by name or city…" oninput="filterTable()"/>
+            </div>
+            <div class="filter-wrap">
+                <select class="filter-select" id="cityFilter" onchange="filterTable()">
+                    <option value="">All Cities</option>
+                    <th:block th:each="v : ${venues}">
+                        <option th:value="${v.city}" th:text="${v.city}"></option>
+                    </th:block>
+                </select>
+            </div>
+        </div>
+        <table id="dataTable" th:if="${!venues.isEmpty()}">
             <thead><tr><th>Name</th><th>City</th><th>Address</th><th>Capacity</th><th>Actions</th></tr></thead>
             <tbody>
-                <tr th:each="v : ${venues}">
+                <tr th:each="v : ${venues}" th:attr="data-city=${v.city}">
                     <td th:text="${v.name}"></td>
                     <td th:text="${v.city}"></td>
                     <td th:text="${v.address}"></td>
-                    <td th:text="${v.capacity}"></td>
-                    <td class="actions">
+                    <td th:text="${#numbers.formatDecimal(v.capacity,1,'COMMA',0,'POINT')}"></td>
+                    <td class="actions" th:unless="${session.adminRole == 'support'}">
                         <a class="btn btn-sm btn-secondary" th:href="@{'/venues/' + ${v.id} + '/edit'}">Edit</a>
                         <form th:action="@{'/venues/' + ${v.id} + '/delete'}" method="post" style="display:inline;">
                             <button class="btn btn-sm btn-danger" onclick="return confirm('Delete this venue?')">Delete</button>
                         </form>
                     </td>
+                    <td th:if="${session.adminRole == 'support'}" class="actions"><span style="color:#94a3b8;">View only</span></td>
                 </tr>
             </tbody>
         </table>
+        <div id="noResults" class="card empty" style="display:none;">No venues match your search.</div>
         <div th:if="${venues.isEmpty()}" class="card empty">No venues yet.</div>
     </main>
 </div>
+<script>
+function filterTable() {
+    var q = document.getElementById('searchInput').value.toLowerCase();
+    var city = document.getElementById('cityFilter').value;
+    var rows = document.querySelectorAll('#dataTable tbody tr');
+    var visible = 0;
+    rows.forEach(function(row) {
+        var text = row.textContent.toLowerCase();
+        var matchQ = !q || text.includes(q);
+        var matchCity = !city || row.dataset.city === city;
+        var show = matchQ && matchCity;
+        row.style.display = show ? '' : 'none';
+        if (show) visible++;
+    });
+    document.getElementById('noResults').style.display = (visible === 0) ? '' : 'none';
+}
+</script>
 </body>
 </html>

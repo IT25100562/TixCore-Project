@@ -37,8 +37,8 @@ public class AuthController {
             .filter(a -> a.getUsername().equalsIgnoreCase(username) && password.equals(a.getPassword()))
             .findFirst();
         if (admin.isPresent()) {
-            SessionUtil.login(session, admin.get().getId(), admin.get().getUsername(),
-                              admin.get().getFullName(), "admin");
+            SessionUtil.loginAdmin(session, admin.get().getId(), admin.get().getUsername(),
+                                   admin.get().getFullName(), admin.get().getRole());
             return "redirect:/";
         }
         // Then users
